@@ -1,0 +1,33 @@
+{
+  "license": "MIT",
+  "name": "example_javascript",
+  "version": "0.0.1",
+  "description": "This is a [Haxe](http://www.haxe.org) project, read more about it in the [README_HAXE.MD](README_HAXE.MD)!",
+  "private": true,
+  "author": "Matthijs Kamstra aka [mck]",
+  "scripts": {
+    "prewatch": "haxe build_all.hxml",
+    "watch": "onchange 'src/*.hx' 'src/*/*.hx' 'src/*/*/*.hx' 'src/*/*/*/*.hx' -v -- haxe build_all.hxml  & livereload bin/"
+  },
+  "devDependencies": {
+    "dts2hx": "^0.19.1",
+    "livereload": "0.9.1",
+    "onchange": "7.1.0"
+  },
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MatthijsKamstra/kluez-sortable.git"
+  },
+  "bugs": {
+    "url": "https://github.com/MatthijsKamstra/kluez-sortable/issues"
+  },
+  "homepage": "https://github.com/MatthijsKamstra/kluez-sortable#readme",
+  "dependencies": {
+    "@types/sortablejs": "^1.13.0",
+    "sortablejs": "^1.15.0"
+  }
+}

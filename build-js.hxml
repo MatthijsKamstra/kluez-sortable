@@ -1,0 +1,9 @@
+# -lib hxColorToolkit
+# --library buddy
+--library sortablejs
+-cp src
+-main Main
+-js docs/kluez-sortable.js
+-D source-map-content
+-debug
+-dce full
