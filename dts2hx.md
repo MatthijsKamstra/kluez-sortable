@@ -18,6 +18,10 @@ haxelib install hxnodejs
 
 ## small adjustments
 
+open `.haxelib/sortablejs/1,13,0/Sortablejs.hx`
+
+and replace
+
 ```haxe
 // @:jsRequire("sortablejs")
 @:native('Sortable')
@@ -26,4 +30,4 @@ haxelib install hxnodejs
 remove `@:jsRequire("sortablejs")` and add `@:native('Sortable')`
 
 1. we will use the embedded js in the html
-2. we want to make sure it uses the name `Sortable` and not `Sortablejs`
+2. we want to make sure it uses the name `Sortable` when transpiling and not `Sortablejs`
