@@ -9,11 +9,10 @@ var Main = function() {
 	this.KLUEZ_WRAPPER_ID = "kluez-sortable-generate";
 	var _gthis = this;
 	window.document.addEventListener("DOMContentLoaded",function(event) {
-		$global.console.log("" + model_constants_App.NAME + " Dom ready :: build: " + "2022-09-18 16:27:02" + " ");
+		$global.console.log("" + model_constants_App.NAME + " Dom ready :: build: " + "2022-09-18 16:32:04" + " ");
 		_gthis.createObje();
 		_gthis.initMenu();
 		_gthis.generateList();
-		_gthis.initTest();
 	});
 };
 Main.__name__ = true;
@@ -30,18 +29,18 @@ Main.prototype = {
 		project1.milestones.push(milestone2);
 		project1.milestones.push(milestone3);
 		var issue1 = new model_vo_IssueVO("a issue","2d");
-		var issue2 = new model_vo_IssueVO("b issue","2d");
-		var issue3 = new model_vo_IssueVO("c issue","2d");
+		var issue2 = new model_vo_IssueVO("b issue","3d");
+		var issue3 = new model_vo_IssueVO("c issue","10d");
 		milestone1.issues = [issue1,issue2,issue3];
-		var issue4 = new model_vo_IssueVO("d issue","2d");
+		var issue4 = new model_vo_IssueVO("d issue","4d");
 		var issue5 = new model_vo_IssueVO("e issue","2d");
 		milestone2.issues = [issue4,issue5];
-		var issue6 = new model_vo_IssueVO("f issue","2d");
+		var issue6 = new model_vo_IssueVO("f issue","1d");
 		var issue7 = new model_vo_IssueVO("g issue","2d");
-		var issue8 = new model_vo_IssueVO("e issue","2d");
+		var issue8 = new model_vo_IssueVO("e issue","4d");
 		milestone3.issues = [issue6,issue7,issue8];
-		console.log("src/Main.hx:61:",project1);
-		console.log("src/Main.hx:62:",JSON.stringify(project1));
+		console.log("src/Main.hx:59:",project1);
+		console.log("src/Main.hx:60:",JSON.stringify(project1));
 		this.data = project1;
 	}
 	,initMenu: function() {
@@ -61,12 +60,12 @@ Main.prototype = {
 		var checkMilestone = window.document.getElementById("checkDragMilestones");
 		var checkIssue = window.document.getElementById("checkDragIssues");
 		checkMilestone.onchange = function(e) {
-			console.log("src/Main.hx:80:","toggle milestons" + Std.string(e));
-			console.log("src/Main.hx:81:",(js_Boot.__cast(e.target , HTMLInputElement)).id);
+			console.log("src/Main.hx:78:","toggle milestons" + Std.string(e));
+			console.log("src/Main.hx:79:",(js_Boot.__cast(e.target , HTMLInputElement)).id);
 		};
 		checkIssue.onchange = function(e) {
-			console.log("src/Main.hx:84:","toggle issue " + Std.string(e));
-			console.log("src/Main.hx:85:",e);
+			console.log("src/Main.hx:82:","toggle issue " + Std.string(e));
+			console.log("src/Main.hx:83:",e);
 		};
 	}
 	,generateList: function() {
@@ -166,26 +165,6 @@ Main.prototype = {
 		a.href = URL.createObjectURL(file);
 		a.download = fileName;
 		a.click();
-	}
-	,initTest: function() {
-		var _gthis = this;
-		var list = window.document.querySelectorAll(".sortable");
-		var _g = 0;
-		var _g1 = list.length;
-		while(_g < _g1) {
-			var i = _g++;
-			var node = js_Boot.__cast(list[i] , HTMLElement);
-			console.log("src/Main.hx:231:",node);
-			new Sortable(node,{ group : "scoreboard", direction : "vertical", animation : 250, scroll : true, bubbleScroll : true, onMove : function(evt,originalEvent) {
-				if(evt.dragged.classList.contains("group") && evt.to.classList.contains("group__goals")) {
-					return false;
-				} else {
-					return true;
-				}
-			}, onEnd : function(evt) {
-				_gthis.onEndHandler(evt);
-			}});
-		}
 	}
 	,__class__: Main
 };

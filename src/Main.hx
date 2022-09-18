@@ -32,8 +32,6 @@ class Main {
 			initMenu();
 
 			generateList();
-
-			initTest();
 		});
 	};
 
@@ -97,6 +95,7 @@ class Main {
 		heading.innerHTML = data.title;
 		div.appendChild(heading);
 
+		// generate the list/milestonesn/issues
 		for (i in 0...data.milestones.length) {
 			var milestone:MilestoneVO = data.milestones[i];
 			// trace(milestone);
@@ -124,6 +123,7 @@ class Main {
 			}
 		}
 
+		// setup sortable
 		var list = document.querySelectorAll(".kl-sortable");
 		for (i in 0...list.length) {
 			var node:Element = cast(list[i], Element);
@@ -219,35 +219,6 @@ class Main {
 		this.filenameUpdate();
 		this.download(Json.stringify(data), '${this.fileName}.json', "text/plain");
 	}
-
-	function initTest() {
-		// var container = document.getElementById("prop");
-		// container.innerHTML = 'html';
-		var list = document.querySelectorAll(".sortable");
-
-		for (i in 0...list.length) {
-			var node:Element = cast(list[i], Element);
-
-			trace(node);
-			new Sortablejs(node, {
-				group: 'scoreboard',
-				direction: 'vertical',
-				animation: 250,
-				scroll: true,
-				bubbleScroll: true,
-				onMove: function(evt, originalEvent) {
-					if (evt.dragged.classList.contains("group") && evt.to.classList.contains("group__goals")) {
-						return false;
-					} else {
-						return true;
-					}
-				},
-				onEnd: function(evt:SortableEvent) {
-					onEndHandler(evt);
-				}
-			});
-		};
-	};
 
 	static public function main() {
 		var app = new Main();
