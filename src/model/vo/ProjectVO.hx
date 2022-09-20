@@ -55,3 +55,8 @@ class ProjectVO {
 		return _type = value;
 	}
 }
+// typedef ProjectType = {
+// 	@:optional var _id:String;
+// 	var title:String;
+// 	var milestones:Array<>;
+// }

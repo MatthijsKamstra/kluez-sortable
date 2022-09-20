@@ -1,0 +1,74 @@
+{
+  "_id": "59cd51b8-e066-4b73-b86f-51060c4f70c7",
+  "title": "ProjectName Foobar",
+  "startDate": "2022-11-19T23:00:00.000Z",
+  "endDate": "2022-12-19T23:00:00.000Z",
+  "milestones": [
+    {
+      "_id": "59cd51b8-5257-4330-9a57-7ed6a1e06a7c",
+      "title": "first milestone",
+      "issues": [
+        {
+          "_type": "issue",
+          "_id": "59cd51b8-8da8-4866-9a7b-7a01eb53b392",
+          "title": "a issue",
+          "duration": "2d"
+        },
+        {
+          "_type": "issue",
+          "_id": "59cd51b8-0db7-4ac2-8754-c0e3bfb45320",
+          "title": "b issue",
+          "duration": "3d"
+        },
+        {
+          "_type": "issue",
+          "_id": "59cd51b8-eead-4158-bd7e-41439fb0b886",
+          "title": "c issue",
+          "duration": "10d"
+        }
+      ]
+    },
+    {
+      "_id": "59cd51b8-5f4d-4f8a-a1bb-eed7d117524e",
+      "title": "second milestone",
+      "issues": [
+        {
+          "_type": "issue",
+          "_id": "59cd51b8-8be3-413e-8fa8-a0159aea2059",
+          "title": "d issue",
+          "duration": "4d"
+        },
+        {
+          "_type": "issue",
+          "_id": "59cd51b8-ea9c-4e57-9a99-7fb12650543a",
+          "title": "e issue",
+          "duration": "2d"
+        }
+      ]
+    },
+    {
+      "_id": "59cd51b8-5c52-415c-9ff6-f3d00e77b934",
+      "title": "third milestone",
+      "issues": [
+        {
+          "_type": "issue",
+          "_id": "59cd51b8-2681-4368-aa8a-ef43efd794ba",
+          "title": "f issue",
+          "duration": "1d"
+        },
+        {
+          "_type": "issue",
+          "_id": "59cd51b8-a86d-462f-8a3d-cd752793235b",
+          "title": "g issue",
+          "duration": "2d"
+        },
+        {
+          "_type": "issue",
+          "_id": "59cd51b8-ddec-40ec-a562-57a153484a9b",
+          "title": "e issue",
+          "duration": "4d"
+        }
+      ]
+    }
+  ]
+}

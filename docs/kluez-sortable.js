@@ -1,4 +1,5 @@
 (function ($global) { "use strict";
+var $estr = function() { return js_Boot.__string_rec(this,''); },$hxEnums = $hxEnums || {},$_;
 function $extend(from, fields) {
 	var proto = Object.create(from);
 	for (var name in fields) proto[name] = fields[name];
@@ -9,7 +10,7 @@ var Main = function() {
 	this.KLUEZ_WRAPPER_ID = "kluez-sortable-generate";
 	var _gthis = this;
 	window.document.addEventListener("DOMContentLoaded",function(event) {
-		$global.console.log("" + model_constants_App.NAME + " Dom ready :: build: " + "2022-09-18 16:32:04" + " ");
+		$global.console.log("" + model_constants_App.NAME + " Dom ready :: build: " + "2022-09-20 13:06:41" + " ");
 		_gthis.createObje();
 		_gthis.initMenu();
 		_gthis.generateList();
@@ -39,8 +40,8 @@ Main.prototype = {
 		var issue7 = new model_vo_IssueVO("g issue","2d");
 		var issue8 = new model_vo_IssueVO("e issue","4d");
 		milestone3.issues = [issue6,issue7,issue8];
-		console.log("src/Main.hx:59:",project1);
-		console.log("src/Main.hx:60:",JSON.stringify(project1));
+		console.log("src/Main.hx:60:",project1);
+		console.log("src/Main.hx:61:",JSON.stringify(project1));
 		this.data = project1;
 	}
 	,initMenu: function() {
@@ -60,37 +61,52 @@ Main.prototype = {
 		var checkMilestone = window.document.getElementById("checkDragMilestones");
 		var checkIssue = window.document.getElementById("checkDragIssues");
 		checkMilestone.onchange = function(e) {
-			console.log("src/Main.hx:78:","toggle milestons" + Std.string(e));
-			console.log("src/Main.hx:79:",(js_Boot.__cast(e.target , HTMLInputElement)).id);
+			console.log("src/Main.hx:79:","toggle milestons" + Std.string(e));
+			console.log("src/Main.hx:80:",(js_Boot.__cast(e.target , HTMLInputElement)).id);
 		};
 		checkIssue.onchange = function(e) {
-			console.log("src/Main.hx:82:","toggle issue " + Std.string(e));
-			console.log("src/Main.hx:83:",e);
+			console.log("src/Main.hx:83:","toggle issue " + Std.string(e));
+			console.log("src/Main.hx:84:",e);
 		};
 	}
 	,generateList: function() {
 		var _gthis = this;
 		var container = window.document.getElementById("wrapper");
+		var input = window.document.createElement("input");
+		input.value = this.data.get_title();
+		var tmp = this.data.get__id();
+		input.dataset.klId = "" + tmp;
+		var tmp = this.data.get_title();
+		input.dataset.klTitle = "" + tmp;
+		input.className = "_form-control h1 form-controle-focus";
+		input.onblur = function(e) {
+			console.log("src/Main.hx:100:","focusout" + e.target.value);
+			return _gthis.data.set_title(e.target.value);
+		};
+		container.appendChild(input);
+		this.header1 = input;
 		var div = window.document.createElement("div");
 		div.id = this.KLUEZ_WRAPPER_ID;
 		div.className = "kluez-board kl-sortable";
 		container.appendChild(div);
-		var heading = window.document.createElement("h1");
-		heading.innerHTML = this.data.get_title();
-		div.appendChild(heading);
 		var _g = 0;
 		var _g1 = this.data.milestones.length;
 		while(_g < _g1) {
 			var i = _g++;
 			var milestone = this.data.milestones[i];
 			var group = window.document.createElement("div");
+			var tmp = milestone.get__id();
+			group.dataset.klId = "" + tmp;
+			var tmp1 = milestone.get_title();
+			group.dataset.klTitle = "" + tmp1;
 			group.className = "group";
-			var tmp = milestone.get_title();
-			group.dataset.klMilestoneName = "" + tmp;
 			div.appendChild(group);
-			var heading = window.document.createElement("h2");
-			heading.innerHTML = "" + milestone.get_title();
-			group.appendChild(heading);
+			var input = window.document.createElement("input");
+			input.value = milestone.get_title();
+			input.dataset.klId = milestone.get__id();
+			input.dataset.klTitle = milestone.get_title();
+			input.className = "_form-control h2 form-controle-focus";
+			group.appendChild(input);
 			var groupGoals = window.document.createElement("div");
 			groupGoals.className = "group__goals kl-sortable";
 			group.appendChild(groupGoals);
@@ -99,7 +115,7 @@ Main.prototype = {
 			while(_g2 < _g3) {
 				var j = _g2++;
 				var issue = milestone.issues[j];
-				var goalTemplate = "<div class=\"goal kl-goal\" data-kl-type=\"" + issue.get__type() + "\"><span class=\"badge rounded-pill text-bg-dark\">" + j + "</span><div class=\"box title\">" + issue.get_title() + "</div><div class=\"box kl-box \">" + issue.get_title() + "</div></div>";
+				var goalTemplate = "\n<div\ndata-kl-type=\"" + issue.get__type() + "\"\ndata-kl-id=\"" + issue.get__id() + "\"\ndata-kl-title=\"" + issue.get_title() + "\"\ndata-kl-duration=\"" + issue.get_duration() + "\"\ndata-kl-start-date=\"" + Std.string(issue.get_startDate()) + "\"\nclass=\"goal kl-goal\"\n>\n\t<span class=\"badge rounded-pill text-bg-dark\">" + j + "</span>\n\t<div class=\"box title\">" + issue.get_title() + "</div>\n\t<div class=\"box kl-box \">" + issue.get_title() + "</div>\n</div>";
 				var frag = window.document.createRange().createContextualFragment(goalTemplate);
 				groupGoals.appendChild(frag);
 			}
@@ -123,32 +139,43 @@ Main.prototype = {
 		this.onEndHandler(null);
 	}
 	,onEndHandler: function(evt) {
-		console.log("src/Main.hx:155:","onEndHandler " + Std.string(evt));
-		console.log("src/Main.hx:156:",evt);
+		console.log("src/Main.hx:185:","onEndHandler " + Std.string(evt));
+		console.log("src/Main.hx:186:",evt);
 		var mileStoneCounter = 0;
 		var issueCounter = 0;
+		var newData;
 		var wrapper = window.document.getElementById(this.KLUEZ_WRAPPER_ID);
 		var _g = 0;
 		var _g1 = wrapper.children.length;
 		while(_g < _g1) {
 			var i = _g++;
-			var childGrup = wrapper.children[i];
-			console.log("src/Main.hx:175:",childGrup);
+			var childGroup = wrapper.children[i];
+			console.log("src/Main.hx:195:","---> childGroup");
+			console.log("src/Main.hx:196:",childGroup);
+			console.log("src/Main.hx:197:",Type.typeof(childGroup));
 			var _g2 = 0;
-			var _g3 = childGrup.children.length;
+			var _g3 = childGroup.children.length;
 			while(_g2 < _g3) {
 				var j = _g2++;
-				var child = childGrup.children[j];
-				if(child.localName == "h2") {
-					console.log("src/Main.hx:180:","child: " + child.innerText);
+				var child = childGroup.children[j];
+				console.log("src/Main.hx:200:","child");
+				console.log("src/Main.hx:201:",child);
+				console.log("src/Main.hx:202:",Type.typeof(child));
+				console.log("src/Main.hx:203:",child.localName);
+				if(child.localName == "input") {
+					console.log("src/Main.hx:210:","child: " + (js_Boot.__cast(child , HTMLInputElement)).value);
 				} else {
-					console.log("src/Main.hx:182:",child);
+					console.log("src/Main.hx:212:",child);
 					var _g4 = 0;
 					var _g5 = child.children.length;
 					while(_g4 < _g5) {
 						var k = _g4++;
 						var c = child.children[k];
-						console.log("src/Main.hx:185:",c.innerText);
+						console.log("src/Main.hx:216:",c.innerText);
+						console.log("src/Main.hx:217:",c.dataset.klId);
+						console.log("src/Main.hx:218:",c.dataset.klType);
+						console.log("src/Main.hx:219:",c.dataset.klDuration);
+						console.log("src/Main.hx:220:",c.dataset.klTitle);
 						var badge = c.querySelector(".badge");
 						badge.innerHTML = "" + (issueCounter + 1);
 						var klBox = c.querySelector(".kl-box");
@@ -190,6 +217,55 @@ StringTools.hex = function(n,digits) {
 		while(s.length < digits) s = "0" + s;
 	}
 	return s;
+};
+var ValueType = $hxEnums["ValueType"] = { __ename__:true,__constructs__:null
+	,TNull: {_hx_name:"TNull",_hx_index:0,__enum__:"ValueType",toString:$estr}
+	,TInt: {_hx_name:"TInt",_hx_index:1,__enum__:"ValueType",toString:$estr}
+	,TFloat: {_hx_name:"TFloat",_hx_index:2,__enum__:"ValueType",toString:$estr}
+	,TBool: {_hx_name:"TBool",_hx_index:3,__enum__:"ValueType",toString:$estr}
+	,TObject: {_hx_name:"TObject",_hx_index:4,__enum__:"ValueType",toString:$estr}
+	,TFunction: {_hx_name:"TFunction",_hx_index:5,__enum__:"ValueType",toString:$estr}
+	,TClass: ($_=function(c) { return {_hx_index:6,c:c,__enum__:"ValueType",toString:$estr}; },$_._hx_name="TClass",$_.__params__ = ["c"],$_)
+	,TEnum: ($_=function(e) { return {_hx_index:7,e:e,__enum__:"ValueType",toString:$estr}; },$_._hx_name="TEnum",$_.__params__ = ["e"],$_)
+	,TUnknown: {_hx_name:"TUnknown",_hx_index:8,__enum__:"ValueType",toString:$estr}
+};
+ValueType.__constructs__ = [ValueType.TNull,ValueType.TInt,ValueType.TFloat,ValueType.TBool,ValueType.TObject,ValueType.TFunction,ValueType.TClass,ValueType.TEnum,ValueType.TUnknown];
+var Type = function() { };
+Type.__name__ = true;
+Type.typeof = function(v) {
+	switch(typeof(v)) {
+	case "boolean":
+		return ValueType.TBool;
+	case "function":
+		if(v.__name__ || v.__ename__) {
+			return ValueType.TObject;
+		}
+		return ValueType.TFunction;
+	case "number":
+		if(Math.ceil(v) == v % 2147483648.0) {
+			return ValueType.TInt;
+		}
+		return ValueType.TFloat;
+	case "object":
+		if(v == null) {
+			return ValueType.TNull;
+		}
+		var e = v.__enum__;
+		if(e != null) {
+			return ValueType.TEnum($hxEnums[e]);
+		}
+		var c = js_Boot.getClass(v);
+		if(c != null) {
+			return ValueType.TClass(c);
+		}
+		return ValueType.TObject;
+	case "string":
+		return ValueType.TClass(String);
+	case "undefined":
+		return ValueType.TNull;
+	default:
+		return ValueType.TUnknown;
+	}
 };
 var haxe_Exception = function(message,previous,native) {
 	Error.call(this,message);
@@ -272,6 +348,34 @@ js_Boot.__string_rec = function(o,s) {
 	case "function":
 		return "<function>";
 	case "object":
+		if(o.__enum__) {
+			var e = $hxEnums[o.__enum__];
+			var con = e.__constructs__[o._hx_index];
+			var n = con._hx_name;
+			if(con.__params__) {
+				s = s + "\t";
+				return n + "(" + ((function($this) {
+					var $r;
+					var _g = [];
+					{
+						var _g1 = 0;
+						var _g2 = con.__params__;
+						while(true) {
+							if(!(_g1 < _g2.length)) {
+								break;
+							}
+							var p = _g2[_g1];
+							_g1 = _g1 + 1;
+							_g.push(js_Boot.__string_rec(o[p],s));
+						}
+					}
+					$r = _g;
+					return $r;
+				}(this))).join(",") + ")";
+			} else {
+				return n;
+			}
+		}
 		if(((o) instanceof Array)) {
 			var str = "[";
 			s += "\t";
@@ -384,7 +488,7 @@ js_Boot.__instanceof = function(o,cl) {
 		if(cl == Enum ? o.__ename__ != null : false) {
 			return true;
 		}
-		return false;
+		return o.__enum__ != null ? $hxEnums[o.__enum__] == cl : false;
 	}
 };
 js_Boot.__downcastCheck = function(o,cl) {
@@ -424,8 +528,10 @@ var model_vo_IssueVO = function(title,duration,startDate) {
 	this._type = "issue";
 	this.set__id(utils_UUID.uuid());
 	this.set_title(title);
-	this.duration = duration;
-	this.startDate = startDate;
+	this.set_duration(duration);
+	if(startDate != null) {
+		this.set_startDate(startDate);
+	}
 };
 model_vo_IssueVO.__name__ = true;
 model_vo_IssueVO.prototype = {
@@ -435,11 +541,26 @@ model_vo_IssueVO.prototype = {
 	,set_title: function(value) {
 		return this.title = value;
 	}
+	,get__id: function() {
+		return this._id;
+	}
 	,set__id: function(value) {
 		return this._id = value;
 	}
 	,get__type: function() {
 		return this._type;
+	}
+	,get_duration: function() {
+		return this.duration;
+	}
+	,set_duration: function(value) {
+		return this.duration = value;
+	}
+	,get_startDate: function() {
+		return this.startDate;
+	}
+	,set_startDate: function(value) {
+		return this.startDate = value;
 	}
 	,__class__: model_vo_IssueVO
 };
@@ -455,6 +576,9 @@ model_vo_MilestoneVO.prototype = {
 	}
 	,set_title: function(value) {
 		return this.title = value;
+	}
+	,get__id: function() {
+		return this._id;
 	}
 	,set__id: function(value) {
 		return this._id = value;
@@ -475,6 +599,9 @@ model_vo_ProjectVO.prototype = {
 	}
 	,set_title: function(value) {
 		return this.title = value;
+	}
+	,get__id: function() {
+		return this._id;
 	}
 	,set__id: function(value) {
 		return this._id = value;

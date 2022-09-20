@@ -6,15 +6,15 @@ class IssueVO {
 	@:isVar public var _id(get, set):String;
 	@:isVar public var _type(get, set):String = 'issue';
 	@:isVar public var title(get, set):String;
-
-	var duration:String;
-	var startDate:Date;
+	@:isVar public var duration(get, set):String;
+	@:isVar public var startDate(get, set):Date;
 
 	public function new(title, duration, ?startDate) {
 		this._id = UUID.uuid();
 		this.title = title;
 		this.duration = duration; // 2d
-		this.startDate = startDate;
+		if (startDate != null)
+			this.startDate = startDate;
 	}
 
 	// ____________________________________ getter/setter ____________________________________
@@ -41,5 +41,21 @@ class IssueVO {
 
 	function set__type(value:String):String {
 		return _type = value;
+	}
+
+	function get_duration():String {
+		return duration;
+	}
+
+	function set_duration(value:String):String {
+		return duration = value;
+	}
+
+	function get_startDate():Date {
+		return startDate;
+	}
+
+	function set_startDate(value:Date):Date {
+		return startDate = value;
 	}
 }

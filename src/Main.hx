@@ -37,6 +37,7 @@ class Main {
 
 	function createObje() {
 		var project1 = new ProjectVO('ProjectName Foobar', new Date(2022, DateUtil.november, 20, 0, 0, 0), new Date(2022, DateUtil.december, 20, 0, 0, 0));
+
 		var milestone1 = new MilestoneVO('first milestone');
 		var milestone2 = new MilestoneVO('second milestone');
 		var milestone3 = new MilestoneVO('third milestone');
@@ -84,40 +85,69 @@ class Main {
 		}
 	}
 
+	var header1:InputElement;
+
 	function generateList() {
 		var container:DivElement = cast document.getElementById('wrapper');
+
+		// make sure h1 isn't dragable
+		var input:InputElement = cast document.createInputElement();
+		input.value = data.title;
+		input.dataset.klId = '${data._id}';
+		input.dataset.klTitle = '${data.title}';
+		input.className = '_form-control h1 form-controle-focus';
+		input.onblur = (e) -> {
+			trace('focusout' + e.target.value);
+			data.title = e.target.value;
+		}
+		container.appendChild(input);
+		header1 = input;
 
 		var div:DivElement = document.createDivElement();
 		div.id = KLUEZ_WRAPPER_ID;
 		div.className = 'kluez-board kl-sortable';
 		container.appendChild(div);
-		var heading = document.createElement('h1');
-		heading.innerHTML = data.title;
-		div.appendChild(heading);
 
 		// generate the list/milestonesn/issues
 		for (i in 0...data.milestones.length) {
 			var milestone:MilestoneVO = data.milestones[i];
 			// trace(milestone);
 			var group = document.createDivElement();
+			group.dataset.klId = '${milestone._id}';
+			group.dataset.klTitle = '${milestone.title}';
 			group.className = 'group';
-			group.dataset.klMilestoneName = '${milestone.title}';
 			div.appendChild(group);
-			var heading = document.createElement('h2');
-			heading.innerHTML = '${milestone.title}';
-			group.appendChild(heading);
+
+			// var heading = document.createElement('h2');
+			// heading.innerHTML = '${milestone.title}';
+			// group.appendChild(heading);
+
+			var input:InputElement = cast document.createInputElement();
+			input.value = milestone.title;
+			input.dataset.klId = milestone._id;
+			input.dataset.klTitle = milestone.title;
+			input.className = '_form-control h2 form-controle-focus';
+			group.appendChild(input);
+
 			var groupGoals = document.createDivElement();
 			// groupGoals.dataset.klMilestoneName = '${milestone.title}';
 			groupGoals.className = 'group__goals kl-sortable';
 			group.appendChild(groupGoals);
 			for (j in 0...milestone.issues.length) {
 				var issue = milestone.issues[j];
-				// var goal = document.createDivElement();
-				// goal.className = 'goal';
-				// goal.innerHTML = issue.title;
-				// goal.dataset.klType = '${issue.type}';
-				// groupGoals.appendChild(goal);
-				var goalTemplate = '<div class="goal kl-goal" data-kl-type="${issue._type}"><span class="badge rounded-pill text-bg-dark">${j}</span><div class="box title">${issue.title}</div><div class="box kl-box ">${issue.title}</div></div>'; // 				// <div class="goal" data-kl-type="issue">issue 1</div>
+				var goalTemplate = '
+<div
+data-kl-type="${issue._type}"
+data-kl-id="${issue._id}"
+data-kl-title="${issue.title}"
+data-kl-duration="${issue.duration}"
+data-kl-start-date="${issue.startDate}"
+class="goal kl-goal"
+>
+	<span class="badge rounded-pill text-bg-dark">${j}</span>
+	<div class="box title">${issue.title}</div>
+	<div class="box kl-box ">${issue.title}</div>
+</div>'; // <div class="goal" data-kl-type="issue">issue 1</div>
 				var frag = document.createRange().createContextualFragment(goalTemplate);
 				groupGoals.appendChild(frag);
 			}
@@ -154,35 +184,41 @@ class Main {
 	function onEndHandler(?evt:SortableEvent) {
 		trace("onEndHandler " + evt);
 		trace(evt);
-		// // var list = document.querySelectorAll(".kl-sortable");
-		// // for (i in 0...list.length) {
-		// // 	var node:Element = cast(list[i], Element);
-		// // 	console.info(node.innerText);
-		// // }
-		// var list = document.querySelectorAll(".kl-sortable");
-		// console.log(list.length);
-		// for (i in 0...list.length) {
-		// 	var node:Element = cast(list[i], Element);
-		// 	console.info(node.children.length);
-		// }
 
 		var mileStoneCounter = 0;
 		var issueCounter = 0;
+		var newData:ProjectVO;
 
 		var wrapper = document.getElementById(KLUEZ_WRAPPER_ID);
 		for (i in 0...wrapper.children.length) {
-			var childGrup = wrapper.children[i];
-			trace(childGrup);
-			for (j in 0...childGrup.children.length) {
-				var child = childGrup.children[j];
-				// trace(Type.typeof(child));
-				if (child.localName == 'h2') {
-					trace("child: " + child.innerText);
+			var childGroup = wrapper.children[i];
+			trace('---> childGroup');
+			trace(childGroup);
+			trace(Type.typeof(childGroup));
+			for (j in 0...childGroup.children.length) {
+				var child = childGroup.children[j];
+				trace('child');
+				trace(child);
+				trace(Type.typeof(child));
+				trace(child.localName);
+				// var __issue:IssueVO = new IssueVO(child.dataset.klTitle, child.dataset.klDuration, Date.fromString(child.dataset.klStartDate));
+				// is an input
+				// or
+				// is a group div
+				if (child.localName == 'input') {
+					// title milestone
+					trace("child: " + cast(child, InputElement).value);
 				} else {
 					trace(child);
+					// issues
 					for (k in 0...child.children.length) {
 						var c = child.children[k];
 						trace(c.innerText);
+						trace(c.dataset.klId);
+						trace(c.dataset.klType);
+						trace(c.dataset.klDuration);
+						trace(c.dataset.klTitle);
+						// change order id
 						var badge = c.querySelector('.badge');
 						badge.innerHTML = '${issueCounter + 1}';
 						var klBox = c.querySelector('.kl-box');
