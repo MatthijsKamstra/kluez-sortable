@@ -7,9 +7,10 @@ class ProjectVO {
 	@:isVar public var _type(get, set):String = 'project';
 	@:isVar public var title(get, set):String;
 
-	var dateFormat = 'YYYY-MM-DD';
-	var startDate:Date;
-	var endDate:Date;
+	public var dateFormat = 'YYYY-MM-DD';
+
+	public var startDate:Date;
+	public var endDate:Date;
 
 	// var _startDate:Date;
 	// var _endDate:Date;

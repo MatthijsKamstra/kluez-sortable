@@ -1,17 +1,18 @@
 package;
 
+import export.Csv;
 import utils.DateUtil;
 import model.vo.ProjectVO;
 import model.vo.IssueVO;
 import model.vo.MilestoneVO;
 import haxe.Json;
-import haxe.Log;
 import sortablejs.SortableEvent;
 import js.Browser.*;
-import js.Browser;
 import js.html.*;
 import model.constants.App;
 import Sortablejs;
+
+using StringTools;
 
 /**
  * @author Matthijs Kamstra aka [mck]
@@ -22,7 +23,11 @@ class Main {
 	var fileName:String;
 	var data:ProjectVO;
 
-	var KLUEZ_WRAPPER_ID = 'kluez-sortable-generate';
+	var kluezDataJson = '';
+	var kluezDataCsv = '';
+	var kluezDataMermaid = '';
+
+	var KLUEZ_WRAPPER_ID:String = 'kluez-sortable-generate';
 
 	public function new() {
 		document.addEventListener("DOMContentLoaded", function(event) {
@@ -68,9 +73,9 @@ class Main {
 		var btnCsv = document.getElementById('btn-download-csv');
 		var btnMermaid = document.getElementById('btn-download-mermaid');
 
-		btnJson.onclick = () -> download('{}', 'test.json', "text/plain");
-		btnCsv.onclick = () -> download('csv', 'test.csv', "text/plain");
-		btnMermaid.onclick = () -> download('mermaid', 'mermaid.md', "text/plain");
+		btnJson.onclick = () -> download(kluezDataJson, 'kluez_data.json', "text/plain");
+		btnCsv.onclick = () -> download(kluezDataCsv, 'kluez_data.csv', "text/plain");
+		btnMermaid.onclick = () -> download(kluezDataMermaid, 'kluez_data_mermaid.md', "text/plain");
 
 		var checkMilestone:InputElement = cast document.getElementById('checkDragMilestones');
 		var checkIssue:InputElement = cast document.getElementById('checkDragIssues');
@@ -182,32 +187,46 @@ class="goal kl-goal"
 	}
 
 	function onEndHandler(?evt:SortableEvent) {
+		console.warn('---------------------------------');
 		trace("onEndHandler " + evt);
 		trace(evt);
 
 		var mileStoneCounter = 0;
 		var issueCounter = 0;
-		var newData:ProjectVO;
 
-		var wrapper = document.getElementById(KLUEZ_WRAPPER_ID);
-		for (i in 0...wrapper.children.length) {
-			var childGroup = wrapper.children[i];
-			trace('---> childGroup');
-			trace(childGroup);
-			trace(Type.typeof(childGroup));
-			for (j in 0...childGroup.children.length) {
-				var child = childGroup.children[j];
+		var _mermaid = new export.Mermaid().init();
+
+		var _csv = new export.Csv().init();
+
+		var _projectVO:ProjectVO = new ProjectVO(data.title, data.startDate, data.endDate);
+		_projectVO._id = data._id;
+
+		var container = document.getElementById(KLUEZ_WRAPPER_ID);
+		for (i in 0...container.children.length) {
+			var mileStoneWrapper = container.children[i];
+			trace('---> mileStoneWrapper');
+			trace(mileStoneWrapper);
+			// trace(Type.typeof(mileStoneWrapper));
+
+			var _mileStoneVO:MilestoneVO = new MilestoneVO('x');
+			_projectVO.milestones.push(_mileStoneVO);
+
+			for (j in 0...mileStoneWrapper.children.length) {
+				var child = mileStoneWrapper.children[j];
 				trace('child');
 				trace(child);
-				trace(Type.typeof(child));
-				trace(child.localName);
+				// trace(Type.typeof(child));
+				// trace(child.localName);
 				// var __issue:IssueVO = new IssueVO(child.dataset.klTitle, child.dataset.klDuration, Date.fromString(child.dataset.klStartDate));
 				// is an input
 				// or
 				// is a group div
 				if (child.localName == 'input') {
 					// title milestone
+					var t = cast(child, InputElement).value;
 					trace("child: " + cast(child, InputElement).value);
+					_mileStoneVO.title = t;
+					_mileStoneVO._id = cast(child, InputElement).dataset.klId; // TODO
 				} else {
 					trace(child);
 					// issues
@@ -218,6 +237,10 @@ class="goal kl-goal"
 						trace(c.dataset.klType);
 						trace(c.dataset.klDuration);
 						trace(c.dataset.klTitle);
+						var _issueVO:IssueVO = new IssueVO(c.dataset.klTitle, c.dataset.klDuration);
+						_issueVO._id = c.dataset.klId;
+						_mileStoneVO.issues.push(_issueVO);
+
 						// change order id
 						var badge = c.querySelector('.badge');
 						badge.innerHTML = '${issueCounter + 1}';
@@ -227,6 +250,20 @@ class="goal kl-goal"
 					}
 				};
 			}
+
+			console.info(_projectVO);
+			console.info(Json.stringify(_projectVO));
+
+			kluezDataJson = Json.stringify(_projectVO, null, '  ');
+			kluezDataCsv = _csv;
+			kluezDataMermaid = _mermaid;
+
+			var div = document.getElementById('js-json');
+			div.innerText = (Json.stringify(_projectVO, null, '  '));
+			var div2 = document.getElementById('js-csv');
+			div2.innerText = _csv;
+			var div3 = document.getElementById('js-mermaid');
+			div3.innerText = _mermaid;
 		}
 	}
 
@@ -235,6 +272,11 @@ class="goal kl-goal"
 	}
 
 	function download(content:String, fileName:String, contentType:String) {
+		var t = DateTools.format(Date.now(), "%Y%m%d_%H%M%S");
+		// 20160708_144405
+
+		fileName = fileName.replace('.', '_${t}.');
+
 		var a = document.createAnchorElement();
 		var file = new Blob([content], {type: contentType});
 		a.href = URL.createObjectURL(file);
