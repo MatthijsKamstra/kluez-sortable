@@ -1,5 +1,7 @@
 package;
 
+import haxe.Log;
+import utils.StringUtil;
 import export.Csv;
 import utils.DateUtil;
 import model.vo.ProjectVO;
@@ -27,21 +29,32 @@ class Main {
 	var kluezDataCsv = '';
 	var kluezDataMermaid = '';
 
+	var header1:InputElement;
+	var inputStartDate:InputElement;
+	var inputEndDate:InputElement;
+
 	var KLUEZ_WRAPPER_ID:String = 'kluez-sortable-generate';
 
 	public function new() {
 		document.addEventListener("DOMContentLoaded", function(event) {
 			console.log('${App.NAME} Dom ready :: build: ${App.getBuildDate()} ');
 
-			createObje();
-			initMenu();
+			setupDataObject();
+			setupMenu();
 
-			generateList();
+			generate();
+
+			// hmmmm, doesn't work yet.
+			var csv = new Csv();
+			// trace(csv.weekNumber(Date.now()));
+			// trace(csv.weekNumber(new Date(2022, 0, 1, 0, 0, 0)));
+			// trace(csv.weekNumber(new Date(2022, 8, 1, 0, 0, 0)));
+			// trace(csv.weekNumber(new Date(2023, 12, 28, 0, 0, 0))); // ma 28 december week 48
 		});
 	};
 
-	function createObje() {
-		var project1 = new ProjectVO('ProjectName Foobar', new Date(2022, DateUtil.november, 20, 0, 0, 0), new Date(2022, DateUtil.december, 20, 0, 0, 0));
+	function setupDataObject() {
+		var project1 = new ProjectVO('ProjectName Foobar', new Date(2022, DateUtil.october, 5, 0, 0, 0), new Date(2023, DateUtil.december, 5, 0, 0, 0));
 
 		var milestone1 = new MilestoneVO('first milestone');
 		var milestone2 = new MilestoneVO('second milestone');
@@ -52,14 +65,14 @@ class Main {
 
 		var issue1 = new IssueVO('a issue', '2d');
 		var issue2 = new IssueVO('b issue', '3d');
-		var issue3 = new IssueVO('c issue', '10d');
+		var issue3 = new IssueVO('c issue', '1d');
 		milestone1.issues = [issue1, issue2, issue3];
 		var issue4 = new IssueVO('d issue', '4d');
 		var issue5 = new IssueVO('e issue', '2d');
 		milestone2.issues = [issue4, issue5];
 		var issue6 = new IssueVO('f issue', '1d');
 		var issue7 = new IssueVO('g issue', '2d');
-		var issue8 = new IssueVO('e issue', '4d');
+		var issue8 = new IssueVO('e issue', '10d');
 		milestone3.issues = [issue6, issue7, issue8];
 
 		trace(project1);
@@ -68,7 +81,7 @@ class Main {
 		data = project1;
 	}
 
-	function initMenu() {
+	function setupMenu() {
 		var btnJson = document.getElementById('btn-download-json');
 		var btnCsv = document.getElementById('btn-download-csv');
 		var btnMermaid = document.getElementById('btn-download-mermaid');
@@ -88,14 +101,34 @@ class Main {
 			trace('toggle issue ' + e);
 			trace(e);
 		}
+
+		inputStartDate = cast document.getElementById('formControleInputStartDate');
+		inputStartDate.value = DateTools.format(data.startDate, "%F");
+		inputStartDate.onchange = (e) -> {
+			trace('inputStartDate');
+			trace(cast(e.target, InputElement).value);
+			trace(e);
+			data.startDate = Date.fromString(cast(e.target, InputElement).value);
+			onUpdate();
+		}
+		// inputStartDate.min = '';
+
+		inputEndDate = cast document.getElementById('formControleInputEndDate');
+		inputEndDate.value = DateTools.format(data.endDate, "%F");
+		inputEndDate.onchange = (e) -> {
+			trace('inputEndDate');
+			trace(cast(e.target, InputElement).value);
+			trace(e);
+			data.endDate = Date.fromString(cast(e.target, InputElement).value);
+			onUpdate();
+		}
+		// inputStartDate.min = '';
 	}
 
-	var header1:InputElement;
-
-	function generateList() {
+	function generate() {
 		var container:DivElement = cast document.getElementById('wrapper');
 
-		// make sure h1 isn't dragable
+		// make sure h1 isn't dragable, set it outside sortable wrapper
 		var input:InputElement = cast document.createInputElement();
 		input.value = data.title;
 		input.dataset.klId = '${data._id}';
@@ -104,6 +137,7 @@ class Main {
 		input.onblur = (e) -> {
 			trace('focusout' + e.target.value);
 			data.title = e.target.value;
+			onUpdate();
 		}
 		container.appendChild(input);
 		header1 = input;
@@ -132,6 +166,12 @@ class Main {
 			input.dataset.klId = milestone._id;
 			input.dataset.klTitle = milestone.title;
 			input.className = '_form-control h2 form-controle-focus';
+			input.onblur = (e) -> {
+				trace('focusout' + e.target.value);
+				milestone.title = e.target.value;
+				input.dataset.klTitle = e.target.value;
+				onUpdate();
+			}
 			group.appendChild(input);
 
 			var groupGoals = document.createDivElement();
@@ -147,7 +187,9 @@ data-kl-id="${issue._id}"
 data-kl-title="${issue.title}"
 data-kl-duration="${issue.duration}"
 data-kl-start-date="${issue.startDate}"
+data-kl-end-date=""
 class="goal kl-goal"
+title="${issue.title}, ${issue.startDate}, ${issue.duration}"
 >
 	<span class="badge rounded-pill text-bg-dark">${j}</span>
 	<div class="box title">${issue.title}</div>
@@ -183,18 +225,27 @@ class="goal kl-goal"
 			});
 		};
 
+		onUpdate();
+	}
+
+	function onUpdate() {
 		onEndHandler(null);
+		updateM();
 	}
 
 	function onEndHandler(?evt:SortableEvent) {
-		console.warn('---------------------------------');
-		trace("onEndHandler " + evt);
-		trace(evt);
+		// console.warn('---------------------------------');
+		// trace("onEndHandler " + evt);
+		// trace(evt);
+
+		var projectStartDate:Date = data.startDate;
+		var currentDate:Date = projectStartDate;
 
 		var mileStoneCounter = 0;
 		var issueCounter = 0;
+		var offsetinDaysCounter = 0;
 
-		var _mermaid = new export.Mermaid().init();
+		var _mermaid = '';
 
 		var _csv = new export.Csv().init();
 
@@ -204,17 +255,18 @@ class="goal kl-goal"
 		var container = document.getElementById(KLUEZ_WRAPPER_ID);
 		for (i in 0...container.children.length) {
 			var mileStoneWrapper = container.children[i];
-			trace('---> mileStoneWrapper');
-			trace(mileStoneWrapper);
+			// trace('---> mileStoneWrapper');
+			// trace(mileStoneWrapper);
 			// trace(Type.typeof(mileStoneWrapper));
 
 			var _mileStoneVO:MilestoneVO = new MilestoneVO('x');
 			_projectVO.milestones.push(_mileStoneVO);
+			_mermaid += '\n\n';
 
 			for (j in 0...mileStoneWrapper.children.length) {
 				var child = mileStoneWrapper.children[j];
-				trace('child');
-				trace(child);
+				// trace('child');
+				// trace(child);
 				// trace(Type.typeof(child));
 				// trace(child.localName);
 				// var __issue:IssueVO = new IssueVO(child.dataset.klTitle, child.dataset.klDuration, Date.fromString(child.dataset.klStartDate));
@@ -224,47 +276,125 @@ class="goal kl-goal"
 				if (child.localName == 'input') {
 					// title milestone
 					var t = cast(child, InputElement).value;
-					trace("child: " + cast(child, InputElement).value);
+					// trace("child: " + cast(child, InputElement).value);
 					_mileStoneVO.title = t;
 					_mileStoneVO._id = cast(child, InputElement).dataset.klId; // TODO
+
+					_mermaid += 'section ${mileStoneCounter + 1}-${StringUtil.cap(t)}\n';
+
+					mileStoneCounter++;
 				} else {
-					trace(child);
+					// trace(child);
 					// issues
 					for (k in 0...child.children.length) {
 						var c = child.children[k];
-						trace(c.innerText);
-						trace(c.dataset.klId);
-						trace(c.dataset.klType);
-						trace(c.dataset.klDuration);
-						trace(c.dataset.klTitle);
-						var _issueVO:IssueVO = new IssueVO(c.dataset.klTitle, c.dataset.klDuration);
+						// trace(c.innerText);
+						// trace(c.dataset.klId);
+						// trace(c.dataset.klType);
+						// trace(c.dataset.klDuration);
+						// trace(c.dataset.klTitle);
+						var _title = c.dataset.klTitle;
+						var _duration = c.dataset.klDuration;
+						var _durationTimestampDays = DateUtil.convert(_duration);
+						var _durationDayInt:Int = DateUtil.convert2DayInt(_duration);
+
+						c.dataset.klStartDate = DateTools.format(currentDate, "%F");
+						c.title = '${_title}, ${DateTools.format(currentDate, "%F")}, ${_duration}';
+
+						var _issueVO:IssueVO = new IssueVO(_title, _duration);
 						_issueVO._id = c.dataset.klId;
+						_issueVO.startDate = currentDate;
 						_mileStoneVO.issues.push(_issueVO);
+
+						// 	1.0-Setup-Backend-(Craft) : a0, 2022-02-17, 1d
+						_mermaid += '\t${StringUtil.cap(_issueVO.title)} : a${issueCounter}, ${DateTools.format(_issueVO.startDate, "%F")}, ${_issueVO.duration}  \n';
 
 						// change order id
 						var badge = c.querySelector('.badge');
 						badge.innerHTML = '${issueCounter + 1}';
 						var klBox = c.querySelector('.kl-box');
-						klBox.setAttribute('style', 'left:${issueCounter * 100}px;width:100px;');
+						var offset = 50;
+						klBox.setAttribute('style', 'left:${offsetinDaysCounter * offset}px;width:${_durationDayInt * offset}px;');
+
+						// count
 						issueCounter++;
+						offsetinDaysCounter += _durationDayInt;
+						// new starting date
+						currentDate = Date.fromTime(currentDate.getTime() + _durationTimestampDays);
 					}
 				};
 			}
 
-			console.info(_projectVO);
-			console.info(Json.stringify(_projectVO));
+			// console.info(_projectVO);
+			// console.info(Json.stringify(_projectVO));
 
 			kluezDataJson = Json.stringify(_projectVO, null, '  ');
 			kluezDataCsv = _csv;
-			kluezDataMermaid = _mermaid;
+			kluezDataMermaid = new export.Mermaid().init(_mermaid);
 
 			var div = document.getElementById('js-json');
-			div.innerText = (Json.stringify(_projectVO, null, '  '));
+			div.innerText = kluezDataJson;
 			var div2 = document.getElementById('js-csv');
-			div2.innerText = _csv;
+			div2.innerText = kluezDataCsv;
 			var div3 = document.getElementById('js-mermaid');
-			div3.innerText = _mermaid;
+			div3.innerText = kluezDataMermaid;
 		}
+	}
+
+	function updateM() {
+		trace('updateM');
+		// var div4 = document.getElementById('js-inject-mermaid');
+		// div4.innerHTML = ''; // reset
+
+		// var clean = kluezDataMermaid.replace('```mermaid', '').replace('```', '').trim();
+
+		// var d = document.createDivElement();
+		// d.className = 'mermaid';
+		// div4.appendChild(d);
+
+		// // untyped mermaid.mermaidApi.render('js-inject-mermaid', kluezDataMermaid.replace('```mermaid', '').replace('```', ''));
+
+		// // untyped mermaid.mermaidAPI.parse('graph TD
+		// // 	A[Client] --> B[Load Balancer]');
+		// // untyped mermaid.mermaidAPI.render('js-inject-mermaid', 'graph
+		// // TD A[Client]-- > B[Load Balancer]');
+
+		// var insert = function(clean) {
+		// 	d.innerHTML = clean;
+		// };
+		// untyped mermaid.render("js-inject-mermaid", clean, insert);
+
+		// div4.innerHTML = ' graph TD // A[Client] --> B[Load Balancer]
+
+		// B --> C[Server01]
+		// B --> D[Server02]';
+
+		// untyped mermaid.initialize();
+
+		// untyped mermaid.mermaidAPI.initialize({startOnLoad: false});
+		// $(function() { // Example of using the API var
+		// 	element = document.querySelector("#graphDiv");
+		// 	var insertSvg = function(svgCode, bindFunctions) {
+		// 		element.innerHTML = svgCode;
+		// 	};
+		// 	var graphDefinition = 'graph TB\na-->b';
+		// 	var graph = mermaid.mermaidAPI.render('graphDiv', graphDefinition, insertSvg);
+		// });
+		// $(function() { // Example of using the API var
+		var element = document.querySelector("#js-mermaid-test");
+		trace(element);
+		var insertSvg = function(svgCode, bindFunctions) {
+			element.innerHTML = svgCode;
+			// callback(id);
+
+			// bindFunctions(element);
+		};
+		var graphDefinition = 'graph TB\na-->b';
+		trace(graphDefinition);
+
+		untyped mermaid.mermaidAPI.render('js-mermaid-test', graphDefinition, insertSvg, element);
+
+		// });
 	}
 
 	function filenameUpdate() {

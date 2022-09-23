@@ -4,7 +4,7 @@ import utils.UUID;
 
 class ProjectVO {
 	@:isVar public var _id(get, set):String;
-	@:isVar public var _type(get, set):String = 'project';
+	@:isVar public var _type(get, null):String = 'project';
 	@:isVar public var title(get, set):String;
 
 	public var dateFormat = 'YYYY-MM-DD';
@@ -52,9 +52,9 @@ class ProjectVO {
 		return _type;
 	}
 
-	function set__type(value:String):String {
-		return _type = value;
-	}
+	// function set__type(value:String):String {
+	// 	return _type = value;
+	// }
 }
 // typedef ProjectType = {
 // 	@:optional var _id:String;

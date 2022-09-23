@@ -2,10 +2,33 @@ package export;
 
 class Mermaid {
 	public function new() {
-		trace('Mermaid');
+		// trace('Mermaid');
 	}
 
-	public function init() {
+	public function init(content:String) {
+		var markdown = '
+```mermaid
+gantt
+	title A Gantt Diagram
+	dateFormat  YYYY-MM-DD
+	excludes    weekends
+
+	%% section Section
+	%% A task           :a1, 2014-01-01, 30d
+	%% Another task     :after a1  , 20d
+	%% section Another
+	%% Task in sec      :2014-01-12  , 12d
+	%% another task      : 24d
+
+${content}
+
+```
+';
+
+		return markdown;
+	}
+
+	function init2() {
 		return '
 ```mermaid
 gantt

@@ -101,6 +101,28 @@ DateTools.format = function(d,f) {
 };
 var HxOverrides = function() { };
 HxOverrides.__name__ = true;
+HxOverrides.strDate = function(s) {
+	switch(s.length) {
+	case 8:
+		var k = s.split(":");
+		var d = new Date();
+		d["setTime"](0);
+		d["setUTCHours"](k[0]);
+		d["setUTCMinutes"](k[1]);
+		d["setUTCSeconds"](k[2]);
+		return d;
+	case 10:
+		var k = s.split("-");
+		return new Date(k[0],k[1] - 1,k[2],0,0,0);
+	case 19:
+		var k = s.split(" ");
+		var y = k[0].split("-");
+		var t = k[1].split(":");
+		return new Date(y[0],y[1] - 1,y[2],t[0],t[1],t[2]);
+	default:
+		throw haxe_Exception.thrown("Invalid date format : " + s);
+	}
+};
 HxOverrides.substr = function(s,pos,len) {
 	if(len == null) {
 		len = s.length;
@@ -123,10 +145,11 @@ var Main = function() {
 	this.kluezDataJson = "";
 	var _gthis = this;
 	window.document.addEventListener("DOMContentLoaded",function(event) {
-		$global.console.log("" + model_constants_App.NAME + " Dom ready :: build: " + "2022-09-23 10:26:56" + " ");
-		_gthis.createObje();
-		_gthis.initMenu();
-		_gthis.generateList();
+		$global.console.log("" + model_constants_App.NAME + " Dom ready :: build: " + "2022-09-23 20:57:48" + " ");
+		_gthis.setupDataObject();
+		_gthis.setupMenu();
+		_gthis.generate();
+		var csv = new export_Csv();
 	});
 };
 Main.__name__ = true;
@@ -134,8 +157,8 @@ Main.main = function() {
 	var app = new Main();
 };
 Main.prototype = {
-	createObje: function() {
-		var project1 = new model_vo_ProjectVO("ProjectName Foobar",new Date(2022,utils_DateUtil.november,20,0,0,0),new Date(2022,utils_DateUtil.december,20,0,0,0));
+	setupDataObject: function() {
+		var project1 = new model_vo_ProjectVO("ProjectName Foobar",new Date(2022,utils_DateUtil.october,5,0,0,0),new Date(2023,utils_DateUtil.december,5,0,0,0));
 		var milestone1 = new model_vo_MilestoneVO("first milestone");
 		var milestone2 = new model_vo_MilestoneVO("second milestone");
 		var milestone3 = new model_vo_MilestoneVO("third milestone");
@@ -144,20 +167,20 @@ Main.prototype = {
 		project1.milestones.push(milestone3);
 		var issue1 = new model_vo_IssueVO("a issue","2d");
 		var issue2 = new model_vo_IssueVO("b issue","3d");
-		var issue3 = new model_vo_IssueVO("c issue","10d");
+		var issue3 = new model_vo_IssueVO("c issue","1d");
 		milestone1.issues = [issue1,issue2,issue3];
 		var issue4 = new model_vo_IssueVO("d issue","4d");
 		var issue5 = new model_vo_IssueVO("e issue","2d");
 		milestone2.issues = [issue4,issue5];
 		var issue6 = new model_vo_IssueVO("f issue","1d");
 		var issue7 = new model_vo_IssueVO("g issue","2d");
-		var issue8 = new model_vo_IssueVO("e issue","4d");
+		var issue8 = new model_vo_IssueVO("e issue","10d");
 		milestone3.issues = [issue6,issue7,issue8];
-		console.log("src/Main.hx:65:",project1);
-		console.log("src/Main.hx:66:",JSON.stringify(project1));
+		console.log("src/Main.hx:78:",project1);
+		console.log("src/Main.hx:79:",JSON.stringify(project1));
 		this.data = project1;
 	}
-	,initMenu: function() {
+	,setupMenu: function() {
 		var _gthis = this;
 		var btnJson = window.document.getElementById("btn-download-json");
 		var btnCsv = window.document.getElementById("btn-download-csv");
@@ -174,15 +197,35 @@ Main.prototype = {
 		var checkMilestone = window.document.getElementById("checkDragMilestones");
 		var checkIssue = window.document.getElementById("checkDragIssues");
 		checkMilestone.onchange = function(e) {
-			console.log("src/Main.hx:84:","toggle milestons" + Std.string(e));
-			console.log("src/Main.hx:85:",(js_Boot.__cast(e.target , HTMLInputElement)).id);
+			console.log("src/Main.hx:97:","toggle milestons" + Std.string(e));
+			console.log("src/Main.hx:98:",(js_Boot.__cast(e.target , HTMLInputElement)).id);
 		};
 		checkIssue.onchange = function(e) {
-			console.log("src/Main.hx:88:","toggle issue " + Std.string(e));
-			console.log("src/Main.hx:89:",e);
+			console.log("src/Main.hx:101:","toggle issue " + Std.string(e));
+			console.log("src/Main.hx:102:",e);
+		};
+		this.inputStartDate = window.document.getElementById("formControleInputStartDate");
+		this.inputStartDate.value = DateTools.format(this.data.startDate,"%F");
+		this.inputStartDate.onchange = function(e) {
+			console.log("src/Main.hx:108:","inputStartDate");
+			console.log("src/Main.hx:109:",(js_Boot.__cast(e.target , HTMLInputElement)).value);
+			console.log("src/Main.hx:110:",e);
+			var tmp = HxOverrides.strDate((js_Boot.__cast(e.target , HTMLInputElement)).value);
+			_gthis.data.startDate = tmp;
+			_gthis.onUpdate();
+		};
+		this.inputEndDate = window.document.getElementById("formControleInputEndDate");
+		this.inputEndDate.value = DateTools.format(this.data.endDate,"%F");
+		this.inputEndDate.onchange = function(e) {
+			console.log("src/Main.hx:119:","inputEndDate");
+			console.log("src/Main.hx:120:",(js_Boot.__cast(e.target , HTMLInputElement)).value);
+			console.log("src/Main.hx:121:",e);
+			var tmp = HxOverrides.strDate((js_Boot.__cast(e.target , HTMLInputElement)).value);
+			_gthis.data.endDate = tmp;
+			_gthis.onUpdate();
 		};
 	}
-	,generateList: function() {
+	,generate: function() {
 		var _gthis = this;
 		var container = window.document.getElementById("wrapper");
 		var input = window.document.createElement("input");
@@ -193,8 +236,9 @@ Main.prototype = {
 		input.dataset.klTitle = "" + tmp;
 		input.className = "_form-control h1 form-controle-focus";
 		input.onblur = function(e) {
-			console.log("src/Main.hx:105:","focusout" + e.target.value);
-			return _gthis.data.set_title(e.target.value);
+			console.log("src/Main.hx:138:","focusout" + e.target.value);
+			_gthis.data.set_title(e.target.value);
+			_gthis.onUpdate();
 		};
 		container.appendChild(input);
 		this.header1 = input;
@@ -206,29 +250,37 @@ Main.prototype = {
 		var _g1 = this.data.milestones.length;
 		while(_g < _g1) {
 			var i = _g++;
-			var milestone = this.data.milestones[i];
+			var milestone = [this.data.milestones[i]];
 			var group = window.document.createElement("div");
-			var tmp = milestone.get__id();
+			var tmp = milestone[0].get__id();
 			group.dataset.klId = "" + tmp;
-			var tmp1 = milestone.get_title();
+			var tmp1 = milestone[0].get_title();
 			group.dataset.klTitle = "" + tmp1;
 			group.className = "group";
 			div.appendChild(group);
-			var input = window.document.createElement("input");
-			input.value = milestone.get_title();
-			input.dataset.klId = milestone.get__id();
-			input.dataset.klTitle = milestone.get_title();
-			input.className = "_form-control h2 form-controle-focus";
-			group.appendChild(input);
+			var input = [window.document.createElement("input")];
+			input[0].value = milestone[0].get_title();
+			input[0].dataset.klId = milestone[0].get__id();
+			input[0].dataset.klTitle = milestone[0].get_title();
+			input[0].className = "_form-control h2 form-controle-focus";
+			input[0].onblur = (function(input,milestone) {
+				return function(e) {
+					console.log("src/Main.hx:170:","focusout" + e.target.value);
+					milestone[0].set_title(e.target.value);
+					input[0].dataset.klTitle = e.target.value;
+					_gthis.onUpdate();
+				};
+			})(input,milestone);
+			group.appendChild(input[0]);
 			var groupGoals = window.document.createElement("div");
 			groupGoals.className = "group__goals kl-sortable";
 			group.appendChild(groupGoals);
 			var _g2 = 0;
-			var _g3 = milestone.issues.length;
+			var _g3 = milestone[0].issues.length;
 			while(_g2 < _g3) {
 				var j = _g2++;
-				var issue = milestone.issues[j];
-				var goalTemplate = "\n<div\ndata-kl-type=\"" + issue.get__type() + "\"\ndata-kl-id=\"" + issue.get__id() + "\"\ndata-kl-title=\"" + issue.get_title() + "\"\ndata-kl-duration=\"" + issue.get_duration() + "\"\ndata-kl-start-date=\"" + Std.string(issue.get_startDate()) + "\"\nclass=\"goal kl-goal\"\n>\n\t<span class=\"badge rounded-pill text-bg-dark\">" + j + "</span>\n\t<div class=\"box title\">" + issue.get_title() + "</div>\n\t<div class=\"box kl-box \">" + issue.get_title() + "</div>\n</div>";
+				var issue = milestone[0].issues[j];
+				var goalTemplate = "\n<div\ndata-kl-type=\"" + issue.get__type() + "\"\ndata-kl-id=\"" + issue.get__id() + "\"\ndata-kl-title=\"" + issue.get_title() + "\"\ndata-kl-duration=\"" + issue.get_duration() + "\"\ndata-kl-start-date=\"" + Std.string(issue.get_startDate()) + "\"\ndata-kl-end-date=\"\"\nclass=\"goal kl-goal\"\ntitle=\"" + issue.get_title() + ", " + Std.string(issue.get_startDate()) + ", " + issue.get_duration() + "\"\n>\n\t<span class=\"badge rounded-pill text-bg-dark\">" + j + "</span>\n\t<div class=\"box title\">" + issue.get_title() + "</div>\n\t<div class=\"box kl-box \">" + issue.get_title() + "</div>\n</div>";
 				var frag = window.document.createRange().createContextualFragment(goalTemplate);
 				groupGoals.appendChild(frag);
 			}
@@ -249,15 +301,19 @@ Main.prototype = {
 				_gthis.onEndHandler(evt);
 			}});
 		}
+		this.onUpdate();
+	}
+	,onUpdate: function() {
 		this.onEndHandler(null);
+		this.updateM();
 	}
 	,onEndHandler: function(evt) {
-		$global.console.warn("---------------------------------");
-		console.log("src/Main.hx:191:","onEndHandler " + Std.string(evt));
-		console.log("src/Main.hx:192:",evt);
+		var projectStartDate = this.data.startDate;
+		var currentDate = projectStartDate;
 		var mileStoneCounter = 0;
 		var issueCounter = 0;
-		var _mermaid = new export_Mermaid().init();
+		var offsetinDaysCounter = 0;
+		var _mermaid = "";
 		var _csv = new export_Csv().init();
 		var _projectVO = new model_vo_ProjectVO(this.data.get_title(),this.data.startDate,this.data.endDate);
 		_projectVO.set__id(this.data.get__id());
@@ -267,57 +323,70 @@ Main.prototype = {
 		while(_g < _g1) {
 			var i = _g++;
 			var mileStoneWrapper = container.children[i];
-			console.log("src/Main.hx:207:","---> mileStoneWrapper");
-			console.log("src/Main.hx:208:",mileStoneWrapper);
 			var _mileStoneVO = new model_vo_MilestoneVO("x");
 			_projectVO.milestones.push(_mileStoneVO);
+			_mermaid += "\n\n";
 			var _g2 = 0;
 			var _g3 = mileStoneWrapper.children.length;
 			while(_g2 < _g3) {
 				var j = _g2++;
 				var child = mileStoneWrapper.children[j];
-				console.log("src/Main.hx:216:","child");
-				console.log("src/Main.hx:217:",child);
 				if(child.localName == "input") {
 					var t = (js_Boot.__cast(child , HTMLInputElement)).value;
-					console.log("src/Main.hx:227:","child: " + (js_Boot.__cast(child , HTMLInputElement)).value);
 					_mileStoneVO.set_title(t);
 					_mileStoneVO.set__id((js_Boot.__cast(child , HTMLInputElement)).dataset.klId);
+					_mermaid += "section " + (mileStoneCounter + 1) + "-" + utils_StringUtil.cap(t) + "\n";
+					++mileStoneCounter;
 				} else {
-					console.log("src/Main.hx:231:",child);
 					var _g4 = 0;
 					var _g5 = child.children.length;
 					while(_g4 < _g5) {
 						var k = _g4++;
 						var c = child.children[k];
-						console.log("src/Main.hx:235:",c.innerText);
-						console.log("src/Main.hx:236:",c.dataset.klId);
-						console.log("src/Main.hx:237:",c.dataset.klType);
-						console.log("src/Main.hx:238:",c.dataset.klDuration);
-						console.log("src/Main.hx:239:",c.dataset.klTitle);
-						var _issueVO = new model_vo_IssueVO(c.dataset.klTitle,c.dataset.klDuration);
+						var _title = c.dataset.klTitle;
+						var _duration = c.dataset.klDuration;
+						var _durationTimestampDays = utils_DateUtil.convert(_duration);
+						var _durationDayInt = utils_DateUtil.convert2DayInt(_duration);
+						c.dataset.klStartDate = DateTools.format(currentDate,"%F");
+						c.title = "" + _title + ", " + DateTools.format(currentDate,"%F") + ", " + _duration;
+						var _issueVO = new model_vo_IssueVO(_title,_duration);
 						_issueVO.set__id(c.dataset.klId);
+						_issueVO.set_startDate(currentDate);
 						_mileStoneVO.issues.push(_issueVO);
+						_mermaid += "\t" + utils_StringUtil.cap(_issueVO.get_title()) + " : a" + issueCounter + ", " + DateTools.format(_issueVO.get_startDate(),"%F") + ", " + _issueVO.get_duration() + "  \n";
 						var badge = c.querySelector(".badge");
 						badge.innerHTML = "" + (issueCounter + 1);
 						var klBox = c.querySelector(".kl-box");
-						klBox.setAttribute("style","left:" + issueCounter * 100 + "px;width:100px;");
+						var offset = 50;
+						klBox.setAttribute("style","left:" + offsetinDaysCounter * offset + "px;width:" + _durationDayInt * offset + "px;");
 						++issueCounter;
+						offsetinDaysCounter += _durationDayInt;
+						currentDate = new Date(currentDate.getTime() + _durationTimestampDays);
 					}
 				}
 			}
-			$global.console.info(_projectVO);
-			$global.console.info(JSON.stringify(_projectVO));
 			this.kluezDataJson = JSON.stringify(_projectVO,null,"  ");
 			this.kluezDataCsv = _csv;
-			this.kluezDataMermaid = _mermaid;
+			this.kluezDataMermaid = new export_Mermaid().init(_mermaid);
 			var div = window.document.getElementById("js-json");
-			div.innerText = JSON.stringify(_projectVO,null,"  ");
+			div.innerText = this.kluezDataJson;
 			var div2 = window.document.getElementById("js-csv");
-			div2.innerText = _csv;
+			div2.innerText = this.kluezDataCsv;
 			var div3 = window.document.getElementById("js-mermaid");
-			div3.innerText = _mermaid;
+			div3.innerText = this.kluezDataMermaid;
 		}
+	}
+	,updateM: function() {
+		console.log("src/Main.hx:345:","updateM");
+		mermaid.mermaidAPI.initialize({ startOnLoad : false});
+		var element = window.document.querySelector("#js-mermaid-test");
+		console.log("src/Main.hx:385:",element);
+		var insertSvg = function(svgCode,bindFunctions) {
+			element.innerHTML = svgCode;
+		};
+		var graphDefinition = "graph TB\na-->b";
+		console.log("src/Main.hx:393:",graphDefinition);
+		mermaid.mermaidAPI.render("js-mermaid-test",graphDefinition,insertSvg,element);
 	}
 	,download: function(content,fileName,contentType) {
 		var t = DateTools.format(new Date(),"%Y%m%d_%H%M%S");
@@ -335,6 +404,26 @@ var Std = function() { };
 Std.__name__ = true;
 Std.string = function(s) {
 	return js_Boot.__string_rec(s,"");
+};
+Std.parseInt = function(x) {
+	if(x != null) {
+		var _g = 0;
+		var _g1 = x.length;
+		while(_g < _g1) {
+			var i = _g++;
+			var c = x.charCodeAt(i);
+			if(c <= 8 || c >= 14 && c != 32 && c != 45) {
+				var nc = x.charCodeAt(i + 1);
+				var v = parseInt(x,nc == 120 || nc == 88 ? 16 : 10);
+				if(isNaN(v)) {
+					return null;
+				} else {
+					return v;
+				}
+			}
+		}
+	}
+	return null;
 };
 var StringTools = function() { };
 StringTools.__name__ = true;
@@ -404,12 +493,12 @@ export_Csv.prototype = {
 	,__class__: export_Csv
 };
 var export_Mermaid = function() {
-	console.log("src/export/Mermaid.hx:5:","Mermaid");
 };
 export_Mermaid.__name__ = true;
 export_Mermaid.prototype = {
-	init: function() {
-		return "\n```mermaid\ngantt\n\ttitle A Gantt Diagram\n\tdateFormat YYYY-MM-DD\n\texcludes weekends\n\n\t%% section Section\n\t%% A task : a1, 2022-02-17, 30d\n\t%% Another task : after a1, 20d\n\t%% section Another\n\t%% Task in sec : 2022-02-24, 12d\n\t%% another task : 24d\n\n\n\t1.0-Setup-Backend-(Craft) : a0, 2022-02-17, 1d\n\t1.1-Setup-Server : a1, after a0, 1d\n\t1.2-Setup-Frontend : a2, after a1, 6d\n\t2.0-Start-Backend-(Craft) : a3, after a2, 1d\n\t2.1-Start-Frontend : a4, after a3, 12d\n\t3.0-Frontend : a5, after a4, 9d\n\t3.1-Backend : a6, after a5, 26d\n\t5.0-Search : a7, after a6, 2d\n\t5.2-Testing : a8, after a7, 15d\n\t5.3-Content : a9, after a8, 1d\n\t5.4-Misc : a10, after a9, 6d\n\n```\n\n\t\t";
+	init: function(content) {
+		var markdown = "\n```mermaid\ngantt\n\ttitle A Gantt Diagram\n\tdateFormat  YYYY-MM-DD\n\texcludes    weekends\n\n\t%% section Section\n\t%% A task           :a1, 2014-01-01, 30d\n\t%% Another task     :after a1  , 20d\n\t%% section Another\n\t%% Task in sec      :2014-01-12  , 12d\n\t%% another task      : 24d\n\n" + content + "\n\n```\n";
+		return markdown;
 	}
 	,__class__: export_Mermaid
 };
@@ -761,6 +850,27 @@ model_vo_ProjectVO.prototype = {
 };
 var utils_DateUtil = function() { };
 utils_DateUtil.__name__ = true;
+utils_DateUtil.convert = function(val) {
+	var tmp = val.indexOf("v") != -1;
+	if(val.indexOf("d") != -1) {
+		var days = parseFloat(StringTools.replace(val,"d",""));
+		return days * 24.0 * 60.0 * 60.0 * 1000.0;
+	}
+	var tmp = val.indexOf("w") != -1;
+	return -1;
+};
+utils_DateUtil.convert2DayInt = function(val) {
+	if(val.indexOf("d") != -1) {
+		var days = Std.parseInt(StringTools.replace(val,"d",""));
+		return days;
+	}
+	return -1;
+};
+var utils_StringUtil = function() { };
+utils_StringUtil.__name__ = true;
+utils_StringUtil.cap = function(string) {
+	return string.charAt(0).toUpperCase() + string.substring(1,string.length);
+};
 var utils_UUID = function() { };
 utils_UUID.__name__ = true;
 utils_UUID.uuid = function() {
@@ -790,7 +900,7 @@ DateTools.DAY_NAMES = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Frida
 DateTools.MONTH_SHORT_NAMES = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 DateTools.MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 model_constants_App.NAME = "[Kluez sortable]";
-utils_DateUtil.november = 10;
+utils_DateUtil.october = 9;
 utils_DateUtil.december = 11;
 Main.main();
 })(typeof window != "undefined" ? window : typeof global != "undefined" ? global : typeof self != "undefined" ? self : this);

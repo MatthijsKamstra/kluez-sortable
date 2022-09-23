@@ -4,7 +4,7 @@ import utils.UUID;
 
 class IssueVO {
 	@:isVar public var _id(get, set):String;
-	@:isVar public var _type(get, set):String = 'issue';
+	@:isVar public var _type(get, null):String = 'issue';
 	@:isVar public var title(get, set):String;
 	@:isVar public var duration(get, set):String;
 	@:isVar public var startDate(get, set):Date;
@@ -39,9 +39,9 @@ class IssueVO {
 		return _type;
 	}
 
-	function set__type(value:String):String {
-		return _type = value;
-	}
+	// function set__type(value:String):String {
+	// 	return _type = value;
+	// }
 
 	function get_duration():String {
 		return duration;

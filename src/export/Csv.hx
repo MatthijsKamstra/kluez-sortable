@@ -1,5 +1,7 @@
 package export;
 
+import haxe.Log;
+
 using DateTools;
 
 class Csv {
@@ -90,5 +92,22 @@ class Csv {
 		// sys.io.File.saveContent(source, content);
 
 		return content;
+	}
+
+	// function test() {
+	// 	currentDate = new Date();
+	// 	startDate = new Date(currentDate.getFullYear(), 0, 1);
+	// 	var days = Math.floor((currentDate - startDate) / (24 * 60 * 60 * 1000));
+	// 	var weekNumber = Math.ceil(days / 7);
+	// 	// Display the calculated result
+	// 	document.write("Week number of " + currentDate + " is :   " + weekNumber);
+	// }
+	public function weekNumber(date:Date) {
+		trace("date: " + date);
+		var firstJanuary = new Date(date.getFullYear(), 0, 1, 0, 0, 0);
+
+		var dayNr = Math.floor((date.getTime() - firstJanuary.getTime()) / (24 * 60 * 60 * 1000));
+		var weekNr = Math.ceil((dayNr + firstJanuary.getDay()) / 7);
+		return weekNr;
 	}
 }

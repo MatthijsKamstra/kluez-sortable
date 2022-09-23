@@ -66,13 +66,47 @@
 			</label>
 		</div>
 
+
 		<div class="container-code"><code><pre id="js-json"></pre></code></div>
 		<div class="container-code"><code><pre id="js-csv"></pre></code></div>
 		<div class="container-code"><code><pre id="js-mermaid"></pre></code></div>
 
+
+		Here is a mermaid diagram:
+		<div id="js-inject-mermaid">
+			<div class="mermaid">
+
+				graph TD
+				A[Client] --> B[Load Balancer]
+				B --> C[Server01]
+				B --> D[Server02]
+			</div>
+		</div>
+
+
+		<div id="js-mermaid-test">test</div>
+
+		<div class="row">
+
+
+			<div class="col-6 mb-3">
+				<label for="formControleInputStartDate" class="form-label">Start date:</label>
+				<input type="date" class="form-control" id="formControleInputStartDate" placeholder="name@example.com"
+					value="">
+			</div>
+			<div class="col-6 mb-3">
+				<label for="formControleInputEndDate" class="form-label">End date:</label>
+				<input type="date" class="form-control" id="formControleInputEndDate" placeholder="name@example.com"
+					value="">
+			</div>
+
+		</div>
+
 	</div>
 
 	<div id=wrapper></div>
+
+	<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
 
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"
 		integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8"

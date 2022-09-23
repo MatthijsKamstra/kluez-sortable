@@ -4,7 +4,7 @@ import utils.UUID;
 
 class MilestoneVO {
 	@:isVar public var _id(get, set):String;
-	@:isVar public var _type(get, set):String = 'milestone';
+	@:isVar public var _type(get, null):String = 'milestone';
 	@:isVar public var title(get, set):String;
 
 	public var issues:Array<IssueVO>;
@@ -37,7 +37,7 @@ class MilestoneVO {
 		return _type;
 	}
 
-	function set__type(value:String):String {
-		return _type = value;
-	}
+	// function set__type(value:String):String {
+	// 	return _type = value;
+	// }
 }
