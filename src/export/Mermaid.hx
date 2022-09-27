@@ -5,11 +5,11 @@ class Mermaid {
 		// trace('Mermaid');
 	}
 
-	public function init(content:String) {
+	public function init(title:String, content:String) {
 		var markdown = '
 ```mermaid
 gantt
-	title A Gantt Diagram
+	title ${title}
 	dateFormat  YYYY-MM-DD
 	excludes    weekends
 

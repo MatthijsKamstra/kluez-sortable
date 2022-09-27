@@ -1,0 +1,82 @@
+{
+  "_id": "7dd6ea16-f0ff-42fd-aa93-9b94714fa951",
+  "title": "ProjectName Foobar",
+  "milestones": [
+    {
+      "_id": "7dd6ea16-42b2-4517-a615-7436e7f19948",
+      "title": "first milestone",
+      "issues": [
+        {
+          "_type": "issue",
+          "_id": "7dd6ea17-4d28-4fcf-b984-9f7c0d7be3ac",
+          "title": "a issue",
+          "duration": "2d",
+          "startDate": "2022-10-04T22:00:00.000Z"
+        },
+        {
+          "_type": "issue",
+          "_id": "7dd6ea17-ccc2-43ba-9a89-557bb146311d",
+          "title": "b issue",
+          "duration": "3d",
+          "startDate": "2022-10-06T22:00:00.000Z"
+        },
+        {
+          "_type": "issue",
+          "_id": "7dd6ea17-f5d5-40a5-b2ea-87ad1023dff1",
+          "title": "c issue",
+          "duration": "1d",
+          "startDate": "2022-10-09T22:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "_id": "7dd6ea16-27fd-49a1-9f5c-8631d14bec73",
+      "title": "second milestone",
+      "issues": [
+        {
+          "_type": "issue",
+          "_id": "7dd6ea17-ddd4-4725-90b8-2e1e5e8def25",
+          "title": "d issue",
+          "duration": "4d",
+          "startDate": "2022-10-10T22:00:00.000Z"
+        },
+        {
+          "_type": "issue",
+          "_id": "7dd6ea17-915e-413a-a625-4013e3e65704",
+          "title": "e issue",
+          "duration": "2d",
+          "startDate": "2022-10-14T22:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "_id": "7dd6ea16-ed91-48df-b348-148664989328",
+      "title": "third milestone",
+      "issues": [
+        {
+          "_type": "issue",
+          "_id": "7dd6ea17-38f5-4bc3-9bc8-93fbebd4c486",
+          "title": "f issue",
+          "duration": "1d",
+          "startDate": "2022-10-16T22:00:00.000Z"
+        },
+        {
+          "_type": "issue",
+          "_id": "7dd6ea17-82bd-4138-9e53-418d412cd25a",
+          "title": "g issue",
+          "duration": "2d",
+          "startDate": "2022-10-17T22:00:00.000Z"
+        },
+        {
+          "_type": "issue",
+          "_id": "7dd6ea17-db1a-4ac2-904f-57ca6c61992b",
+          "title": "e issue",
+          "duration": "10d",
+          "startDate": "2022-10-19T22:00:00.000Z"
+        }
+      ]
+    }
+  ],
+  "startDate": "2022-10-04T22:00:00.000Z",
+  "endDate": "2023-12-04T23:00:00.000Z"
+}

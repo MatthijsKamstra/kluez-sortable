@@ -1,5 +1,7 @@
 package;
 
+import storage.LocalStorage;
+import js.lib.intl.RelativeTimeFormat.RelativeTimeFormatSupportedLocalesOfOptions;
 import haxe.Log;
 import utils.StringUtil;
 import export.Csv;
@@ -34,13 +36,15 @@ class Main {
 	var inputEndDate:InputElement;
 
 	var KLUEZ_WRAPPER_ID:String = 'kluez-sortable-generate';
+	var localStorage = new LocalStorage();
+	var KLUEZ_LOCAL_STOEAGE_ID = 'kluez-local-storage';
 
 	public function new() {
 		document.addEventListener("DOMContentLoaded", function(event) {
 			console.log('${App.NAME} Dom ready :: build: ${App.getBuildDate()} ');
 
 			setupDataObject();
-			setupMenu();
+			setupUX();
 
 			generate();
 
@@ -81,7 +85,7 @@ class Main {
 		data = project1;
 	}
 
-	function setupMenu() {
+	function setupUX() {
 		var btnJson = document.getElementById('btn-download-json');
 		var btnCsv = document.getElementById('btn-download-csv');
 		var btnMermaid = document.getElementById('btn-download-mermaid');
@@ -122,8 +126,87 @@ class Main {
 			data.endDate = Date.fromString(cast(e.target, InputElement).value);
 			onUpdate();
 		}
-		// inputStartDate.min = '';
+
+		var fileSelector:InputElement = cast document.getElementById('formFile');
+		fileSelector.addEventListener('change', (event) -> {
+			trace(event);
+			// If there's no file, do nothing
+			if (event.target.files.length <= 0)
+				return;
+
+			var fileList:FileList = event.target.files;
+			console.log(fileList);
+			for (file in fileList) {
+				console.log(file);
+			}
+			var file:File = fileList[0];
+
+			// Create a new FileReader() object
+			var reader = new FileReader();
+
+			// Setup the callback event to run when the file is read
+			// reader.onload = logFile;
+			reader.onload = (e) -> {
+				var target = e.target;
+				var data = Json.parse(target.result);
+				console.log(data);
+				// store data
+				localStorage.setItem(KLUEZ_LOCAL_STOEAGE_ID, data);
+			};
+
+			// Read the file
+			reader.readAsText(file);
+		});
+
+		var dropArea = document.getElementById('drop-area');
+
+		dropArea.addEventListener('dragover', (event) -> {
+			event.stopPropagation();
+			event.preventDefault();
+			// Style the drag-and-drop as a "copy file" operation.
+			event.dataTransfer.dropEffect = 'copy';
+		});
+
+		dropArea.addEventListener('drop', (event) -> {
+			event.stopPropagation();
+			event.preventDefault();
+			var fileList = event.dataTransfer.files;
+			console.log(fileList);
+		});
 	}
+
+	// function getMetadataForFileList(fileList) {
+	// 	for (var file
+	// 	of
+	// 	fileList
+	// )
+	// 	{
+	// 		// Not supported in Safari for iOS.
+	// 		var name = file.name ? file.name : 'NOT SUPPORTED';
+	// 		// Not supported in Firefox for Android or Opera for Android.
+	// 		var type = file.type ? file.type : 'NOT SUPPORTED';
+	// 		// Unknown cross-browser support.
+	// 		var size = file.size ? file.size : 'NOT SUPPORTED';
+	// 		console.log({
+	// 			file,
+	// 			name,
+	// 			type,
+	// 			size
+	// 		});
+	// 	}
+	// }
+	// function readImage(file) {
+	// 	// Check if the file is an image.
+	// 	if (file.type && !file.type.startsWith('image/')) {
+	// 		console.log('File is not an image.', file.type, file);
+	// 		return;
+	// 	}
+	// 	var reader = new FileReader();
+	// 	reader.addEventListener('load', (event) -> {
+	// 		img.src = event.target.result;
+	// 	});
+	// 	reader.readAsDataURL(file);
+	// }
 
 	function generate() {
 		var container:DivElement = cast document.getElementById('wrapper');
@@ -330,7 +413,7 @@ title="${issue.title}, ${issue.startDate}, ${issue.duration}"
 
 			kluezDataJson = Json.stringify(_projectVO, null, '  ');
 			kluezDataCsv = _csv;
-			kluezDataMermaid = new export.Mermaid().init(_mermaid);
+			kluezDataMermaid = new export.Mermaid().init(data.title, _mermaid);
 
 			var div = document.getElementById('js-json');
 			div.innerText = kluezDataJson;
@@ -381,18 +464,18 @@ title="${issue.title}, ${issue.startDate}, ${issue.duration}"
 		// 	var graph = mermaid.mermaidAPI.render('graphDiv', graphDefinition, insertSvg);
 		// });
 		// $(function() { // Example of using the API var
-		var element = document.querySelector("#js-mermaid-test");
-		trace(element);
-		var insertSvg = function(svgCode, bindFunctions) {
-			element.innerHTML = svgCode;
-			// callback(id);
+		// var element = document.querySelector("#js-mermaid-test");
+		// trace(element);
+		// var insertSvg = function(svgCode, bindFunctions) {
+		// 	element.innerHTML = svgCode;
+		// 	// callback(id);
 
-			// bindFunctions(element);
-		};
-		var graphDefinition = 'graph TB\na-->b';
-		trace(graphDefinition);
+		// 	// bindFunctions(element);
+		// };
+		// var graphDefinition = 'graph TB\na-->b';
+		// trace(graphDefinition);
 
-		untyped mermaid.mermaidAPI.render('js-mermaid-test', graphDefinition, insertSvg, element);
+		// untyped mermaid.mermaidAPI.render('js-mermaid-test', graphDefinition, insertSvg, element);
 
 		// });
 	}

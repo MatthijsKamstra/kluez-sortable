@@ -1,8 +1,3 @@
-# Kluez - sortabel
-
-- https://github.com/SortableJS/Sortable
-
-- mermaid
 
 ```mermaid
 gantt
@@ -20,20 +15,20 @@ gantt
 
 
 section 1-First milestone
-	A issue : a0, 2022-10-05, 2d
-	B issue : a1, 2022-10-07, 3d
-	C issue : a2, 2022-10-10, 1d
+	A issue : a0, 2022-10-05, 2d  
+	B issue : a1, 2022-10-07, 3d  
+	C issue : a2, 2022-10-10, 1d  
 
 
 section 2-Second milestone
-	D issue : a3, 2022-10-11, 4d
-	E issue : a4, 2022-10-15, 2d
+	D issue : a3, 2022-10-11, 4d  
+	E issue : a4, 2022-10-15, 2d  
 
 
 section 3-Third milestone
-	F issue : a5, 2022-10-17, 1d
-	G issue : a6, 2022-10-18, 2d
-	E issue : a7, 2022-10-20, 10d
+	F issue : a5, 2022-10-17, 1d  
+	G issue : a6, 2022-10-18, 2d  
+	E issue : a7, 2022-10-20, 10d  
 
 
 ```

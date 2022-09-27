@@ -139,15 +139,17 @@ HxOverrides.now = function() {
 	return Date.now();
 };
 var Main = function() {
+	this.KLUEZ_LOCAL_STOEAGE_ID = "kluez-local-storage";
+	this.localStorage = new storage_LocalStorage();
 	this.KLUEZ_WRAPPER_ID = "kluez-sortable-generate";
 	this.kluezDataMermaid = "";
 	this.kluezDataCsv = "";
 	this.kluezDataJson = "";
 	var _gthis = this;
 	window.document.addEventListener("DOMContentLoaded",function(event) {
-		$global.console.log("" + model_constants_App.NAME + " Dom ready :: build: " + "2022-09-23 20:57:48" + " ");
+		$global.console.log("" + model_constants_App.NAME + " Dom ready :: build: " + "2022-09-27 12:27:58" + " ");
 		_gthis.setupDataObject();
-		_gthis.setupMenu();
+		_gthis.setupUX();
 		_gthis.generate();
 		var csv = new export_Csv();
 	});
@@ -176,11 +178,11 @@ Main.prototype = {
 		var issue7 = new model_vo_IssueVO("g issue","2d");
 		var issue8 = new model_vo_IssueVO("e issue","10d");
 		milestone3.issues = [issue6,issue7,issue8];
-		console.log("src/Main.hx:78:",project1);
-		console.log("src/Main.hx:79:",JSON.stringify(project1));
+		console.log("src/Main.hx:82:",project1);
+		console.log("src/Main.hx:83:",JSON.stringify(project1));
 		this.data = project1;
 	}
-	,setupMenu: function() {
+	,setupUX: function() {
 		var _gthis = this;
 		var btnJson = window.document.getElementById("btn-download-json");
 		var btnCsv = window.document.getElementById("btn-download-csv");
@@ -197,19 +199,19 @@ Main.prototype = {
 		var checkMilestone = window.document.getElementById("checkDragMilestones");
 		var checkIssue = window.document.getElementById("checkDragIssues");
 		checkMilestone.onchange = function(e) {
-			console.log("src/Main.hx:97:","toggle milestons" + Std.string(e));
-			console.log("src/Main.hx:98:",(js_Boot.__cast(e.target , HTMLInputElement)).id);
+			console.log("src/Main.hx:101:","toggle milestons" + Std.string(e));
+			console.log("src/Main.hx:102:",(js_Boot.__cast(e.target , HTMLInputElement)).id);
 		};
 		checkIssue.onchange = function(e) {
-			console.log("src/Main.hx:101:","toggle issue " + Std.string(e));
-			console.log("src/Main.hx:102:",e);
+			console.log("src/Main.hx:105:","toggle issue " + Std.string(e));
+			console.log("src/Main.hx:106:",e);
 		};
 		this.inputStartDate = window.document.getElementById("formControleInputStartDate");
 		this.inputStartDate.value = DateTools.format(this.data.startDate,"%F");
 		this.inputStartDate.onchange = function(e) {
-			console.log("src/Main.hx:108:","inputStartDate");
-			console.log("src/Main.hx:109:",(js_Boot.__cast(e.target , HTMLInputElement)).value);
-			console.log("src/Main.hx:110:",e);
+			console.log("src/Main.hx:112:","inputStartDate");
+			console.log("src/Main.hx:113:",(js_Boot.__cast(e.target , HTMLInputElement)).value);
+			console.log("src/Main.hx:114:",e);
 			var tmp = HxOverrides.strDate((js_Boot.__cast(e.target , HTMLInputElement)).value);
 			_gthis.data.startDate = tmp;
 			_gthis.onUpdate();
@@ -217,13 +219,49 @@ Main.prototype = {
 		this.inputEndDate = window.document.getElementById("formControleInputEndDate");
 		this.inputEndDate.value = DateTools.format(this.data.endDate,"%F");
 		this.inputEndDate.onchange = function(e) {
-			console.log("src/Main.hx:119:","inputEndDate");
-			console.log("src/Main.hx:120:",(js_Boot.__cast(e.target , HTMLInputElement)).value);
-			console.log("src/Main.hx:121:",e);
+			console.log("src/Main.hx:123:","inputEndDate");
+			console.log("src/Main.hx:124:",(js_Boot.__cast(e.target , HTMLInputElement)).value);
+			console.log("src/Main.hx:125:",e);
 			var tmp = HxOverrides.strDate((js_Boot.__cast(e.target , HTMLInputElement)).value);
 			_gthis.data.endDate = tmp;
 			_gthis.onUpdate();
 		};
+		var fileSelector = window.document.getElementById("formFile");
+		fileSelector.addEventListener("change",function(event) {
+			console.log("src/Main.hx:132:",event);
+			if(event.target.files.length <= 0) {
+				return;
+			}
+			var fileList = event.target.files;
+			$global.console.log(fileList);
+			var _g = 0;
+			while(_g < fileList.length) {
+				var file = fileList[_g];
+				++_g;
+				$global.console.log(file);
+			}
+			var file = fileList[0];
+			var reader = new FileReader();
+			reader.onload = function(e) {
+				var target = e.target;
+				var data = JSON.parse(target.result);
+				$global.console.log(data);
+				_gthis.localStorage.setItem(_gthis.KLUEZ_LOCAL_STOEAGE_ID,target.result);
+			};
+			reader.readAsText(file);
+		});
+		var dropArea = window.document.getElementById("drop-area");
+		dropArea.addEventListener("dragover",function(event) {
+			event.stopPropagation();
+			event.preventDefault();
+			return event.dataTransfer.dropEffect = "copy";
+		});
+		dropArea.addEventListener("drop",function(event) {
+			event.stopPropagation();
+			event.preventDefault();
+			var fileList = event.dataTransfer.files;
+			$global.console.log(fileList);
+		});
 	}
 	,generate: function() {
 		var _gthis = this;
@@ -236,7 +274,7 @@ Main.prototype = {
 		input.dataset.klTitle = "" + tmp;
 		input.className = "_form-control h1 form-controle-focus";
 		input.onblur = function(e) {
-			console.log("src/Main.hx:138:","focusout" + e.target.value);
+			console.log("src/Main.hx:221:","focusout" + e.target.value);
 			_gthis.data.set_title(e.target.value);
 			_gthis.onUpdate();
 		};
@@ -265,7 +303,7 @@ Main.prototype = {
 			input[0].className = "_form-control h2 form-controle-focus";
 			input[0].onblur = (function(input,milestone) {
 				return function(e) {
-					console.log("src/Main.hx:170:","focusout" + e.target.value);
+					console.log("src/Main.hx:253:","focusout" + e.target.value);
 					milestone[0].set_title(e.target.value);
 					input[0].dataset.klTitle = e.target.value;
 					_gthis.onUpdate();
@@ -367,7 +405,7 @@ Main.prototype = {
 			}
 			this.kluezDataJson = JSON.stringify(_projectVO,null,"  ");
 			this.kluezDataCsv = _csv;
-			this.kluezDataMermaid = new export_Mermaid().init(_mermaid);
+			this.kluezDataMermaid = new export_Mermaid().init(this.data.get_title(),_mermaid);
 			var div = window.document.getElementById("js-json");
 			div.innerText = this.kluezDataJson;
 			var div2 = window.document.getElementById("js-csv");
@@ -377,16 +415,7 @@ Main.prototype = {
 		}
 	}
 	,updateM: function() {
-		console.log("src/Main.hx:345:","updateM");
-		mermaid.mermaidAPI.initialize({ startOnLoad : false});
-		var element = window.document.querySelector("#js-mermaid-test");
-		console.log("src/Main.hx:385:",element);
-		var insertSvg = function(svgCode,bindFunctions) {
-			element.innerHTML = svgCode;
-		};
-		var graphDefinition = "graph TB\na-->b";
-		console.log("src/Main.hx:393:",graphDefinition);
-		mermaid.mermaidAPI.render("js-mermaid-test",graphDefinition,insertSvg,element);
+		console.log("src/Main.hx:428:","updateM");
 	}
 	,download: function(content,fileName,contentType) {
 		var t = DateTools.format(new Date(),"%Y%m%d_%H%M%S");
@@ -496,8 +525,8 @@ var export_Mermaid = function() {
 };
 export_Mermaid.__name__ = true;
 export_Mermaid.prototype = {
-	init: function(content) {
-		var markdown = "\n```mermaid\ngantt\n\ttitle A Gantt Diagram\n\tdateFormat  YYYY-MM-DD\n\texcludes    weekends\n\n\t%% section Section\n\t%% A task           :a1, 2014-01-01, 30d\n\t%% Another task     :after a1  , 20d\n\t%% section Another\n\t%% Task in sec      :2014-01-12  , 12d\n\t%% another task      : 24d\n\n" + content + "\n\n```\n";
+	init: function(title,content) {
+		var markdown = "\n```mermaid\ngantt\n\ttitle " + title + "\n\tdateFormat  YYYY-MM-DD\n\texcludes    weekends\n\n\t%% section Section\n\t%% A task           :a1, 2014-01-01, 30d\n\t%% Another task     :after a1  , 20d\n\t%% section Another\n\t%% Task in sec      :2014-01-12  , 12d\n\t%% another task      : 24d\n\n" + content + "\n\n```\n";
 		return markdown;
 	}
 	,__class__: export_Mermaid
@@ -762,6 +791,22 @@ js_Boot.__isNativeObj = function(o) {
 js_Boot.__resolveNativeClass = function(name) {
 	return $global[name];
 };
+var js_Browser = function() { };
+js_Browser.__name__ = true;
+js_Browser.getLocalStorage = function() {
+	try {
+		var s = window.localStorage;
+		s.getItem("");
+		if(s.length == 0) {
+			var key = "_hx_" + Math.random();
+			s.setItem(key,key);
+			s.removeItem(key);
+		}
+		return s;
+	} catch( _g ) {
+		return null;
+	}
+};
 var model_constants_App = function() { };
 model_constants_App.__name__ = true;
 var model_vo_IssueVO = function(title,duration,startDate) {
@@ -847,6 +892,17 @@ model_vo_ProjectVO.prototype = {
 		return this._id = value;
 	}
 	,__class__: model_vo_ProjectVO
+};
+var storage_LocalStorage = function() {
+	this.localStorage = js_Browser.getLocalStorage();
+	console.log("/Users/matthijskamstra/Documents/GIT/kluez-sortable/src/storage/LocalStorage.hx:10:","LocalStorage");
+};
+storage_LocalStorage.__name__ = true;
+storage_LocalStorage.prototype = {
+	setItem: function(key,value) {
+		this.localStorage.setItem(key,JSON.stringify(value));
+	}
+	,__class__: storage_LocalStorage
 };
 var utils_DateUtil = function() { };
 utils_DateUtil.__name__ = true;
