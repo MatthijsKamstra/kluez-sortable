@@ -27,6 +27,7 @@ class Main {
 	var kluezDataJson = '';
 	var kluezDataCsv = '';
 	var kluezDataMermaid = '';
+	var kluezDataMermaidHTML = '';
 
 	var header1:InputElement;
 	var inputStartDate:InputElement;
@@ -43,11 +44,11 @@ class Main {
 
 			var json = localStorage.getItem(KLUEZ_LOCAL_STORAGE_ID);
 			if (json == null) {
-				trace("Create test data");
+				console.info("Create dummy test data");
 				setupDataObject();
 			} else {
-				trace("Use localhost data");
-				trace(ProjectVO.parse(json));
+				console.info("Use local-storage data");
+				// trace(ProjectVO.parse(json));
 				projectVO = ProjectVO.parse(json);
 			}
 			setupUX();
@@ -97,10 +98,12 @@ class Main {
 		var btnJson = document.getElementById('btn-download-json');
 		var btnCsv = document.getElementById('btn-download-csv');
 		var btnMermaid = document.getElementById('btn-download-mermaid');
+		var btnMermaidWrapper = document.getElementById('btn-download-mermaid-wrapper');
 
 		btnJson.onclick = () -> download(kluezDataJson, 'kluez_data.json', "text/plain");
 		btnCsv.onclick = () -> download(kluezDataCsv, 'kluez_data.csv', "text/plain");
 		btnMermaid.onclick = () -> download(kluezDataMermaid, 'kluez_data_mermaid.md', "text/plain");
+		btnMermaidWrapper.onclick = () -> download(kluezDataMermaidHTML, 'kluez_data_mermaid.html', "text/plain");
 
 		var checkMilestone:InputElement = cast document.getElementById('checkDragMilestones');
 		var checkIssue:InputElement = cast document.getElementById('checkDragIssues');
@@ -427,7 +430,11 @@ title="${issue.title}, ${issue.startDate}, ${issue.duration}"
 						_mileStoneVO.issues.push(_issueVO);
 
 						// 	1.0-Setup-Backend-(Craft) : a0, 2022-02-17, 1d
-						_mermaid += '\t${StringUtil.cap(_issueVO.title)} : a${issueCounter}, ${DateTools.format(_issueVO.startDate, "%F")}, ${_issueVO.duration}  \n';
+						if (issueCounter == 0) {
+							_mermaid += '\t${StringUtil.cap(_issueVO.title)} : a${issueCounter}, ${DateTools.format(_issueVO.startDate, "%F")}, ${_issueVO.duration}  \n';
+						} else {
+							_mermaid += '\t${StringUtil.cap(_issueVO.title)} : a${issueCounter}, after a${issueCounter - 1}, ${_issueVO.duration}  \n';
+						}
 
 						// change order id
 						var badge = c.querySelector('.badge');
@@ -451,6 +458,7 @@ title="${issue.title}, ${issue.startDate}, ${issue.duration}"
 			kluezDataJson = Json.stringify(_projectVO, null, '  ');
 			kluezDataCsv = _csv;
 			kluezDataMermaid = new export.Mermaid().init(projectVO.title, _mermaid);
+			kluezDataMermaidHTML = new export.Mermaid().html(projectVO.title, _mermaid);
 
 			var div = document.getElementById('js-json');
 			div.innerText = kluezDataJson;

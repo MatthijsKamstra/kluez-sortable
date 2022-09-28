@@ -1,5 +1,7 @@
 package export;
 
+using StringTools;
+
 class Mermaid {
 	public function new() {
 		// trace('Mermaid');
@@ -14,11 +16,11 @@ gantt
 	excludes    weekends
 
 	%% section Section
-	%% A task           :a1, 2014-01-01, 30d
-	%% Another task     :after a1  , 20d
+	%% A task           : a1, 2014-01-01, 30d
+	%% Another task     : after a1, 20d
 	%% section Another
-	%% Task in sec      :2014-01-12  , 12d
-	%% another task      : 24d
+	%% Task in sec      : 2014-01-12, 12d
+	%% another task		: 24d
 
 ${content}
 
@@ -26,6 +28,31 @@ ${content}
 ';
 
 		return markdown;
+	}
+
+	public function html(title:String, content:String) {
+		var md = new export.Mermaid().init(title, content);
+		var c = md.replace('```mermaid', '').replace('```', '');
+		var template = '<html>
+    <body>
+        <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+        <script>
+            mermaid.initialize({ startOnLoad: true });
+        </script>
+		<!-- title: ${title} -->
+		<!--
+		${md}
+		-->
+
+
+		<div class="mermaid">
+           ${c}
+        </div>
+
+    </body>
+</html>';
+
+		return template;
 	}
 
 	function init2() {

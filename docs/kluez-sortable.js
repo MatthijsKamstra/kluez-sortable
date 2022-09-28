@@ -142,19 +142,19 @@ var Main = function() {
 	this.KLUEZ_LOCAL_STORAGE_ID = "kluez-local-storage";
 	this.localStorage = new storage_LocalStorage();
 	this.KLUEZ_WRAPPER_ID = "kluez-sortable-generate";
+	this.kluezDataMermaidHTML = "";
 	this.kluezDataMermaid = "";
 	this.kluezDataCsv = "";
 	this.kluezDataJson = "";
 	var _gthis = this;
 	window.document.addEventListener("DOMContentLoaded",function(event) {
-		$global.console.log("" + model_constants_App.NAME + " Dom ready :: build: " + "2022-09-28 11:37:47" + " ");
+		$global.console.log("" + model_constants_App.NAME + " Dom ready :: build: " + "2022-09-28 14:15:22" + " ");
 		var json = _gthis.localStorage.getItem(_gthis.KLUEZ_LOCAL_STORAGE_ID);
 		if(json == null) {
-			console.log("src/Main.hx:46:","Create test data");
+			$global.console.info("Create dummy test data");
 			_gthis.setupDataObject();
 		} else {
-			console.log("src/Main.hx:49:","Use localhost data");
-			console.log("src/Main.hx:50:",model_vo_ProjectVO.parse(json));
+			$global.console.info("Use local-storage data");
 			_gthis.projectVO = model_vo_ProjectVO.parse(json);
 		}
 		_gthis.setupUX();
@@ -186,8 +186,8 @@ Main.prototype = {
 		var issue7 = new model_vo_IssueVO("g issue","2d");
 		var issue8 = new model_vo_IssueVO("e issue","10d");
 		milestone3.issues = [issue6,issue7,issue8];
-		console.log("src/Main.hx:88:",project1);
-		console.log("src/Main.hx:89:",JSON.stringify(project1));
+		console.log("src/Main.hx:89:",project1);
+		console.log("src/Main.hx:90:",JSON.stringify(project1));
 		this.projectVO = project1;
 		this.localStorage.setItem(this.KLUEZ_LOCAL_STORAGE_ID,JSON.stringify(this.projectVO));
 	}
@@ -196,6 +196,7 @@ Main.prototype = {
 		var btnJson = window.document.getElementById("btn-download-json");
 		var btnCsv = window.document.getElementById("btn-download-csv");
 		var btnMermaid = window.document.getElementById("btn-download-mermaid");
+		var btnMermaidWrapper = window.document.getElementById("btn-download-mermaid-wrapper");
 		btnJson.onclick = function() {
 			_gthis.download(_gthis.kluezDataJson,"kluez_data.json","text/plain");
 		};
@@ -205,15 +206,18 @@ Main.prototype = {
 		btnMermaid.onclick = function() {
 			_gthis.download(_gthis.kluezDataMermaid,"kluez_data_mermaid.md","text/plain");
 		};
+		btnMermaidWrapper.onclick = function() {
+			_gthis.download(_gthis.kluezDataMermaidHTML,"kluez_data_mermaid.html","text/plain");
+		};
 		var checkMilestone = window.document.getElementById("checkDragMilestones");
 		var checkIssue = window.document.getElementById("checkDragIssues");
 		checkMilestone.onchange = function(e) {
-			console.log("src/Main.hx:109:","toggle milestons" + Std.string(e));
-			console.log("src/Main.hx:110:",(js_Boot.__cast(e.target , HTMLInputElement)).id);
+			console.log("src/Main.hx:112:","toggle milestons" + Std.string(e));
+			console.log("src/Main.hx:113:",(js_Boot.__cast(e.target , HTMLInputElement)).id);
 		};
 		checkIssue.onchange = function(e) {
-			console.log("src/Main.hx:113:","toggle issue " + Std.string(e));
-			console.log("src/Main.hx:114:",e);
+			console.log("src/Main.hx:116:","toggle issue " + Std.string(e));
+			console.log("src/Main.hx:117:",e);
 		};
 		this.inputStartDate = window.document.getElementById("formControleInputStartDate");
 		var tmp = HxOverrides.strDate(StringTools.replace(StringTools.replace("" + Std.string(this.projectVO.startDate),"T"," "),".000Z",""));
@@ -222,9 +226,9 @@ Main.prototype = {
 		this.projectVO.endDate = tmp;
 		this.inputStartDate.value = DateTools.format(this.projectVO.startDate,"%F");
 		this.inputStartDate.onchange = function(e) {
-			console.log("src/Main.hx:125:","inputStartDate");
-			console.log("src/Main.hx:126:",(js_Boot.__cast(e.target , HTMLInputElement)).value);
-			console.log("src/Main.hx:127:",e);
+			console.log("src/Main.hx:128:","inputStartDate");
+			console.log("src/Main.hx:129:",(js_Boot.__cast(e.target , HTMLInputElement)).value);
+			console.log("src/Main.hx:130:",e);
 			var tmp = HxOverrides.strDate((js_Boot.__cast(e.target , HTMLInputElement)).value);
 			_gthis.projectVO.startDate = tmp;
 			_gthis.onUpdate();
@@ -232,16 +236,16 @@ Main.prototype = {
 		this.inputEndDate = window.document.getElementById("formControleInputEndDate");
 		this.inputEndDate.value = DateTools.format(this.projectVO.endDate,"%F");
 		this.inputEndDate.onchange = function(e) {
-			console.log("src/Main.hx:136:","inputEndDate");
-			console.log("src/Main.hx:137:",(js_Boot.__cast(e.target , HTMLInputElement)).value);
-			console.log("src/Main.hx:138:",e);
+			console.log("src/Main.hx:139:","inputEndDate");
+			console.log("src/Main.hx:140:",(js_Boot.__cast(e.target , HTMLInputElement)).value);
+			console.log("src/Main.hx:141:",e);
 			var tmp = HxOverrides.strDate((js_Boot.__cast(e.target , HTMLInputElement)).value);
 			_gthis.projectVO.endDate = tmp;
 			_gthis.onUpdate();
 		};
 		var fileSelector = window.document.getElementById("formFile");
 		fileSelector.addEventListener("change",function(event) {
-			console.log("src/Main.hx:145:",event);
+			console.log("src/Main.hx:148:",event);
 			if(event.target.files.length <= 0) {
 				return;
 			}
@@ -272,7 +276,7 @@ Main.prototype = {
 		dropArea.addEventListener("drop",function(event) {
 			event.stopPropagation();
 			event.preventDefault();
-			console.log("src/Main.hx:186:",event);
+			console.log("src/Main.hx:189:",event);
 			var fileList = event.dataTransfer.files;
 			$global.console.log(fileList);
 			var _g = 0;
@@ -303,7 +307,7 @@ Main.prototype = {
 		input.dataset.klTitle = "" + tmp;
 		input.className = "_form-control h1 form-controle-focus";
 		input.onblur = function(e) {
-			console.log("src/Main.hx:258:","focusout" + e.target.value);
+			console.log("src/Main.hx:261:","focusout" + e.target.value);
 			_gthis.projectVO.set_title(e.target.value);
 			_gthis.onUpdate();
 		};
@@ -332,7 +336,7 @@ Main.prototype = {
 			input[0].className = "_form-control h2 form-controle-focus";
 			input[0].onblur = (function(input,milestone) {
 				return function(e) {
-					console.log("src/Main.hx:290:","focusout" + e.target.value);
+					console.log("src/Main.hx:293:","focusout" + e.target.value);
 					milestone[0].set_title(e.target.value);
 					input[0].dataset.klTitle = e.target.value;
 					_gthis.onUpdate();
@@ -420,7 +424,11 @@ Main.prototype = {
 						_issueVO.set__id(c.dataset.klId);
 						_issueVO.set_startDate(currentDate);
 						_mileStoneVO.issues.push(_issueVO);
-						_mermaid += "\t" + utils_StringUtil.cap(_issueVO.get_title()) + " : a" + issueCounter + ", " + DateTools.format(_issueVO.get_startDate(),"%F") + ", " + _issueVO.get_duration() + "  \n";
+						if(issueCounter == 0) {
+							_mermaid += "\t" + utils_StringUtil.cap(_issueVO.get_title()) + " : a" + issueCounter + ", " + DateTools.format(_issueVO.get_startDate(),"%F") + ", " + _issueVO.get_duration() + "  \n";
+						} else {
+							_mermaid += "\t" + utils_StringUtil.cap(_issueVO.get_title()) + " : a" + issueCounter + ", after a" + (issueCounter - 1) + ", " + _issueVO.get_duration() + "  \n";
+						}
 						var badge = c.querySelector(".badge");
 						badge.innerHTML = "" + (issueCounter + 1);
 						var klBox = c.querySelector(".kl-box");
@@ -435,6 +443,7 @@ Main.prototype = {
 			this.kluezDataJson = JSON.stringify(_projectVO,null,"  ");
 			this.kluezDataCsv = _csv;
 			this.kluezDataMermaid = new export_Mermaid().init(this.projectVO.get_title(),_mermaid);
+			this.kluezDataMermaidHTML = new export_Mermaid().html(this.projectVO.get_title(),_mermaid);
 			var div = window.document.getElementById("js-json");
 			div.innerText = this.kluezDataJson;
 			var div2 = window.document.getElementById("js-csv");
@@ -444,7 +453,7 @@ Main.prototype = {
 		}
 	}
 	,updateM: function() {
-		console.log("src/Main.hx:465:","updateM");
+		console.log("src/Main.hx:473:","updateM");
 	}
 	,download: function(content,fileName,contentType) {
 		var t = DateTools.format(new Date(),"%Y%m%d_%H%M%S");
@@ -555,8 +564,14 @@ var export_Mermaid = function() {
 export_Mermaid.__name__ = true;
 export_Mermaid.prototype = {
 	init: function(title,content) {
-		var markdown = "\n```mermaid\ngantt\n\ttitle " + title + "\n\tdateFormat  YYYY-MM-DD\n\texcludes    weekends\n\n\t%% section Section\n\t%% A task           :a1, 2014-01-01, 30d\n\t%% Another task     :after a1  , 20d\n\t%% section Another\n\t%% Task in sec      :2014-01-12  , 12d\n\t%% another task      : 24d\n\n" + content + "\n\n```\n";
+		var markdown = "\n```mermaid\ngantt\n\ttitle " + title + "\n\tdateFormat  YYYY-MM-DD\n\texcludes    weekends\n\n\t%% section Section\n\t%% A task           : a1, 2014-01-01, 30d\n\t%% Another task     : after a1, 20d\n\t%% section Another\n\t%% Task in sec      : 2014-01-12, 12d\n\t%% another task\t\t: 24d\n\n" + content + "\n\n```\n";
 		return markdown;
+	}
+	,html: function(title,content) {
+		var md = new export_Mermaid().init(title,content);
+		var c = StringTools.replace(StringTools.replace(md,"```mermaid",""),"```","");
+		var template = "<html>\n    <body>\n        <script src=\"https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js\"></script>\n        <script>\n            mermaid.initialize({ startOnLoad: true });\n        </script>\n\t\t<!-- title: " + title + " -->\n\t\t<!--\n\t\t" + md + "\n\t\t-->\n\n\n\t\t<div class=\"mermaid\">\n           " + c + "\n        </div>\n\n    </body>\n</html>";
+		return template;
 	}
 	,__class__: export_Mermaid
 };
