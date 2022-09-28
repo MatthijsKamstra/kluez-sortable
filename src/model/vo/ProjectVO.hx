@@ -1,5 +1,6 @@
 package model.vo;
 
+import model.vo.MilestoneVO;
 import utils.UUID;
 
 class ProjectVO {
@@ -30,6 +31,16 @@ class ProjectVO {
 		// this.endDate = endDate.toString();
 	}
 
+	public static function parse(json:ProjectVOType):ProjectVO {
+		var p = new ProjectVO(json.title, json.startDate, json.endDate);
+		p._id = json._id;
+		p.title = json.title;
+		p.milestones = MilestoneVO.parse(json.milestones);
+		p.startDate = json.startDate;
+		p.endDate = json.endDate;
+		return p;
+	}
+
 	// ____________________________________ getter/setter ____________________________________
 
 	function get_title():String {
@@ -56,8 +67,11 @@ class ProjectVO {
 	// 	return _type = value;
 	// }
 }
-// typedef ProjectType = {
-// 	@:optional var _id:String;
-// 	var title:String;
-// 	var milestones:Array<>;
-// }
+
+typedef ProjectVOType = {
+	@:optional var _id:String;
+	var title:String;
+	var milestones:Array<MilestoneVOType>;
+	var startDate:Date;
+	var endDate:Date;
+}

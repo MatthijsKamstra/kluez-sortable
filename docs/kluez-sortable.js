@@ -139,7 +139,7 @@ HxOverrides.now = function() {
 	return Date.now();
 };
 var Main = function() {
-	this.KLUEZ_LOCAL_STOEAGE_ID = "kluez-local-storage";
+	this.KLUEZ_LOCAL_STORAGE_ID = "kluez-local-storage";
 	this.localStorage = new storage_LocalStorage();
 	this.KLUEZ_WRAPPER_ID = "kluez-sortable-generate";
 	this.kluezDataMermaid = "";
@@ -147,8 +147,16 @@ var Main = function() {
 	this.kluezDataJson = "";
 	var _gthis = this;
 	window.document.addEventListener("DOMContentLoaded",function(event) {
-		$global.console.log("" + model_constants_App.NAME + " Dom ready :: build: " + "2022-09-27 12:27:58" + " ");
-		_gthis.setupDataObject();
+		$global.console.log("" + model_constants_App.NAME + " Dom ready :: build: " + "2022-09-28 11:37:47" + " ");
+		var json = _gthis.localStorage.getItem(_gthis.KLUEZ_LOCAL_STORAGE_ID);
+		if(json == null) {
+			console.log("src/Main.hx:46:","Create test data");
+			_gthis.setupDataObject();
+		} else {
+			console.log("src/Main.hx:49:","Use localhost data");
+			console.log("src/Main.hx:50:",model_vo_ProjectVO.parse(json));
+			_gthis.projectVO = model_vo_ProjectVO.parse(json);
+		}
 		_gthis.setupUX();
 		_gthis.generate();
 		var csv = new export_Csv();
@@ -178,9 +186,10 @@ Main.prototype = {
 		var issue7 = new model_vo_IssueVO("g issue","2d");
 		var issue8 = new model_vo_IssueVO("e issue","10d");
 		milestone3.issues = [issue6,issue7,issue8];
-		console.log("src/Main.hx:82:",project1);
-		console.log("src/Main.hx:83:",JSON.stringify(project1));
-		this.data = project1;
+		console.log("src/Main.hx:88:",project1);
+		console.log("src/Main.hx:89:",JSON.stringify(project1));
+		this.projectVO = project1;
+		this.localStorage.setItem(this.KLUEZ_LOCAL_STORAGE_ID,JSON.stringify(this.projectVO));
 	}
 	,setupUX: function() {
 		var _gthis = this;
@@ -199,36 +208,40 @@ Main.prototype = {
 		var checkMilestone = window.document.getElementById("checkDragMilestones");
 		var checkIssue = window.document.getElementById("checkDragIssues");
 		checkMilestone.onchange = function(e) {
-			console.log("src/Main.hx:101:","toggle milestons" + Std.string(e));
-			console.log("src/Main.hx:102:",(js_Boot.__cast(e.target , HTMLInputElement)).id);
+			console.log("src/Main.hx:109:","toggle milestons" + Std.string(e));
+			console.log("src/Main.hx:110:",(js_Boot.__cast(e.target , HTMLInputElement)).id);
 		};
 		checkIssue.onchange = function(e) {
-			console.log("src/Main.hx:105:","toggle issue " + Std.string(e));
-			console.log("src/Main.hx:106:",e);
+			console.log("src/Main.hx:113:","toggle issue " + Std.string(e));
+			console.log("src/Main.hx:114:",e);
 		};
 		this.inputStartDate = window.document.getElementById("formControleInputStartDate");
-		this.inputStartDate.value = DateTools.format(this.data.startDate,"%F");
+		var tmp = HxOverrides.strDate(StringTools.replace(StringTools.replace("" + Std.string(this.projectVO.startDate),"T"," "),".000Z",""));
+		this.projectVO.startDate = tmp;
+		var tmp = HxOverrides.strDate(StringTools.replace(StringTools.replace("" + Std.string(this.projectVO.endDate),"T"," "),".000Z",""));
+		this.projectVO.endDate = tmp;
+		this.inputStartDate.value = DateTools.format(this.projectVO.startDate,"%F");
 		this.inputStartDate.onchange = function(e) {
-			console.log("src/Main.hx:112:","inputStartDate");
-			console.log("src/Main.hx:113:",(js_Boot.__cast(e.target , HTMLInputElement)).value);
-			console.log("src/Main.hx:114:",e);
+			console.log("src/Main.hx:125:","inputStartDate");
+			console.log("src/Main.hx:126:",(js_Boot.__cast(e.target , HTMLInputElement)).value);
+			console.log("src/Main.hx:127:",e);
 			var tmp = HxOverrides.strDate((js_Boot.__cast(e.target , HTMLInputElement)).value);
-			_gthis.data.startDate = tmp;
+			_gthis.projectVO.startDate = tmp;
 			_gthis.onUpdate();
 		};
 		this.inputEndDate = window.document.getElementById("formControleInputEndDate");
-		this.inputEndDate.value = DateTools.format(this.data.endDate,"%F");
+		this.inputEndDate.value = DateTools.format(this.projectVO.endDate,"%F");
 		this.inputEndDate.onchange = function(e) {
-			console.log("src/Main.hx:123:","inputEndDate");
-			console.log("src/Main.hx:124:",(js_Boot.__cast(e.target , HTMLInputElement)).value);
-			console.log("src/Main.hx:125:",e);
+			console.log("src/Main.hx:136:","inputEndDate");
+			console.log("src/Main.hx:137:",(js_Boot.__cast(e.target , HTMLInputElement)).value);
+			console.log("src/Main.hx:138:",e);
 			var tmp = HxOverrides.strDate((js_Boot.__cast(e.target , HTMLInputElement)).value);
-			_gthis.data.endDate = tmp;
+			_gthis.projectVO.endDate = tmp;
 			_gthis.onUpdate();
 		};
 		var fileSelector = window.document.getElementById("formFile");
 		fileSelector.addEventListener("change",function(event) {
-			console.log("src/Main.hx:132:",event);
+			console.log("src/Main.hx:145:",event);
 			if(event.target.files.length <= 0) {
 				return;
 			}
@@ -246,7 +259,7 @@ Main.prototype = {
 				var target = e.target;
 				var data = JSON.parse(target.result);
 				$global.console.log(data);
-				_gthis.localStorage.setItem(_gthis.KLUEZ_LOCAL_STOEAGE_ID,target.result);
+				_gthis.localStorage.setItem(_gthis.KLUEZ_LOCAL_STORAGE_ID,data);
 			};
 			reader.readAsText(file);
 		});
@@ -259,23 +272,39 @@ Main.prototype = {
 		dropArea.addEventListener("drop",function(event) {
 			event.stopPropagation();
 			event.preventDefault();
+			console.log("src/Main.hx:186:",event);
 			var fileList = event.dataTransfer.files;
 			$global.console.log(fileList);
+			var _g = 0;
+			while(_g < fileList.length) {
+				var file = fileList[_g];
+				++_g;
+				$global.console.log(file);
+			}
+			var file = fileList[0];
+			var reader = new FileReader();
+			reader.onload = function(e) {
+				var target = e.target;
+				var data = JSON.parse(target.result);
+				$global.console.log(data);
+				_gthis.localStorage.setItem(_gthis.KLUEZ_LOCAL_STORAGE_ID,data);
+			};
+			reader.readAsText(file);
 		});
 	}
 	,generate: function() {
 		var _gthis = this;
 		var container = window.document.getElementById("wrapper");
 		var input = window.document.createElement("input");
-		input.value = this.data.get_title();
-		var tmp = this.data.get__id();
+		input.value = this.projectVO.get_title();
+		var tmp = this.projectVO.get__id();
 		input.dataset.klId = "" + tmp;
-		var tmp = this.data.get_title();
+		var tmp = this.projectVO.get_title();
 		input.dataset.klTitle = "" + tmp;
 		input.className = "_form-control h1 form-controle-focus";
 		input.onblur = function(e) {
-			console.log("src/Main.hx:221:","focusout" + e.target.value);
-			_gthis.data.set_title(e.target.value);
+			console.log("src/Main.hx:258:","focusout" + e.target.value);
+			_gthis.projectVO.set_title(e.target.value);
 			_gthis.onUpdate();
 		};
 		container.appendChild(input);
@@ -285,10 +314,10 @@ Main.prototype = {
 		div.className = "kluez-board kl-sortable";
 		container.appendChild(div);
 		var _g = 0;
-		var _g1 = this.data.milestones.length;
+		var _g1 = this.projectVO.milestones.length;
 		while(_g < _g1) {
 			var i = _g++;
-			var milestone = [this.data.milestones[i]];
+			var milestone = [this.projectVO.milestones[i]];
 			var group = window.document.createElement("div");
 			var tmp = milestone[0].get__id();
 			group.dataset.klId = "" + tmp;
@@ -303,7 +332,7 @@ Main.prototype = {
 			input[0].className = "_form-control h2 form-controle-focus";
 			input[0].onblur = (function(input,milestone) {
 				return function(e) {
-					console.log("src/Main.hx:253:","focusout" + e.target.value);
+					console.log("src/Main.hx:290:","focusout" + e.target.value);
 					milestone[0].set_title(e.target.value);
 					input[0].dataset.klTitle = e.target.value;
 					_gthis.onUpdate();
@@ -346,15 +375,15 @@ Main.prototype = {
 		this.updateM();
 	}
 	,onEndHandler: function(evt) {
-		var projectStartDate = this.data.startDate;
+		var projectStartDate = this.projectVO.startDate;
 		var currentDate = projectStartDate;
 		var mileStoneCounter = 0;
 		var issueCounter = 0;
 		var offsetinDaysCounter = 0;
 		var _mermaid = "";
 		var _csv = new export_Csv().init();
-		var _projectVO = new model_vo_ProjectVO(this.data.get_title(),this.data.startDate,this.data.endDate);
-		_projectVO.set__id(this.data.get__id());
+		var _projectVO = new model_vo_ProjectVO(this.projectVO.get_title(),this.projectVO.startDate,this.projectVO.endDate);
+		_projectVO.set__id(this.projectVO.get__id());
 		var container = window.document.getElementById(this.KLUEZ_WRAPPER_ID);
 		var _g = 0;
 		var _g1 = container.children.length;
@@ -405,7 +434,7 @@ Main.prototype = {
 			}
 			this.kluezDataJson = JSON.stringify(_projectVO,null,"  ");
 			this.kluezDataCsv = _csv;
-			this.kluezDataMermaid = new export_Mermaid().init(this.data.get_title(),_mermaid);
+			this.kluezDataMermaid = new export_Mermaid().init(this.projectVO.get_title(),_mermaid);
 			var div = window.document.getElementById("js-json");
 			div.innerText = this.kluezDataJson;
 			var div2 = window.document.getElementById("js-csv");
@@ -415,7 +444,7 @@ Main.prototype = {
 		}
 	}
 	,updateM: function() {
-		console.log("src/Main.hx:428:","updateM");
+		console.log("src/Main.hx:465:","updateM");
 	}
 	,download: function(content,fileName,contentType) {
 		var t = DateTools.format(new Date(),"%Y%m%d_%H%M%S");
@@ -819,6 +848,19 @@ var model_vo_IssueVO = function(title,duration,startDate) {
 	}
 };
 model_vo_IssueVO.__name__ = true;
+model_vo_IssueVO.parse = function(arr) {
+	var array = [];
+	var _g = 0;
+	var _g1 = arr.length;
+	while(_g < _g1) {
+		var i = _g++;
+		var _issueObj = arr[i];
+		var issue = new model_vo_IssueVO(_issueObj.title,_issueObj.duration,_issueObj.startDate);
+		issue.set__id(_issueObj._id);
+		array.push(issue);
+	}
+	return array;
+};
 model_vo_IssueVO.prototype = {
 	get_title: function() {
 		return this.title;
@@ -855,6 +897,20 @@ var model_vo_MilestoneVO = function(title) {
 	this.issues = [];
 };
 model_vo_MilestoneVO.__name__ = true;
+model_vo_MilestoneVO.parse = function(arr) {
+	var array = [];
+	var _g = 0;
+	var _g1 = arr.length;
+	while(_g < _g1) {
+		var i = _g++;
+		var _milestoneObj = arr[i];
+		var milestone = new model_vo_MilestoneVO(_milestoneObj.title);
+		milestone.set__id(_milestoneObj._id);
+		milestone.issues = model_vo_IssueVO.parse(_milestoneObj.issues);
+		array.push(milestone);
+	}
+	return array;
+};
 model_vo_MilestoneVO.prototype = {
 	get_title: function() {
 		return this.title;
@@ -878,6 +934,15 @@ var model_vo_ProjectVO = function(title,startDate,endDate) {
 	this.endDate = endDate;
 };
 model_vo_ProjectVO.__name__ = true;
+model_vo_ProjectVO.parse = function(json) {
+	var p = new model_vo_ProjectVO(json.title,json.startDate,json.endDate);
+	p.set__id(json._id);
+	p.set_title(json.title);
+	p.milestones = model_vo_MilestoneVO.parse(json.milestones);
+	p.startDate = json.startDate;
+	p.endDate = json.endDate;
+	return p;
+};
 model_vo_ProjectVO.prototype = {
 	get_title: function() {
 		return this.title;
@@ -895,12 +960,20 @@ model_vo_ProjectVO.prototype = {
 };
 var storage_LocalStorage = function() {
 	this.localStorage = js_Browser.getLocalStorage();
-	console.log("/Users/matthijskamstra/Documents/GIT/kluez-sortable/src/storage/LocalStorage.hx:10:","LocalStorage");
+	console.log("src/storage/LocalStorage.hx:10:","LocalStorage");
 };
 storage_LocalStorage.__name__ = true;
 storage_LocalStorage.prototype = {
 	setItem: function(key,value) {
-		this.localStorage.setItem(key,JSON.stringify(value));
+		this.localStorage.setItem(key,value);
+	}
+	,getItem: function(key) {
+		var str = this.localStorage.getItem(key);
+		if(str == null) {
+			return null;
+		} else {
+			return JSON.parse(str);
+		}
 	}
 	,__class__: storage_LocalStorage
 };

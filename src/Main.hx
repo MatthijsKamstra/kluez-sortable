@@ -1,8 +1,6 @@
 package;
 
 import storage.LocalStorage;
-import js.lib.intl.RelativeTimeFormat.RelativeTimeFormatSupportedLocalesOfOptions;
-import haxe.Log;
 import utils.StringUtil;
 import export.Csv;
 import utils.DateUtil;
@@ -20,12 +18,11 @@ using StringTools;
 
 /**
  * @author Matthijs Kamstra aka [mck]
- * MIT
  */
 class Main {
 	var container:js.html.DivElement;
 	var fileName:String;
-	var data:ProjectVO;
+	var projectVO:ProjectVO;
 
 	var kluezDataJson = '';
 	var kluezDataCsv = '';
@@ -36,14 +33,23 @@ class Main {
 	var inputEndDate:InputElement;
 
 	var KLUEZ_WRAPPER_ID:String = 'kluez-sortable-generate';
+
 	var localStorage = new LocalStorage();
-	var KLUEZ_LOCAL_STOEAGE_ID = 'kluez-local-storage';
+	var KLUEZ_LOCAL_STORAGE_ID = 'kluez-local-storage';
 
 	public function new() {
 		document.addEventListener("DOMContentLoaded", function(event) {
 			console.log('${App.NAME} Dom ready :: build: ${App.getBuildDate()} ');
 
-			setupDataObject();
+			var json = localStorage.getItem(KLUEZ_LOCAL_STORAGE_ID);
+			if (json == null) {
+				trace("Create test data");
+				setupDataObject();
+			} else {
+				trace("Use localhost data");
+				trace(ProjectVO.parse(json));
+				projectVO = ProjectVO.parse(json);
+			}
 			setupUX();
 
 			generate();
@@ -82,7 +88,9 @@ class Main {
 		trace(project1);
 		trace(Json.stringify(project1));
 
-		data = project1;
+		projectVO = project1;
+
+		localStorage.setItem(KLUEZ_LOCAL_STORAGE_ID, Json.stringify(projectVO));
 	}
 
 	function setupUX() {
@@ -107,23 +115,28 @@ class Main {
 		}
 
 		inputStartDate = cast document.getElementById('formControleInputStartDate');
-		inputStartDate.value = DateTools.format(data.startDate, "%F");
+
+		// parse date format back
+		projectVO.startDate = Date.fromString('${projectVO.startDate}'.replace('T', ' ').replace('.000Z', ''));
+		projectVO.endDate = Date.fromString('${projectVO.endDate}'.replace('T', ' ').replace('.000Z', ''));
+
+		inputStartDate.value = DateTools.format(projectVO.startDate, "%F");
 		inputStartDate.onchange = (e) -> {
 			trace('inputStartDate');
 			trace(cast(e.target, InputElement).value);
 			trace(e);
-			data.startDate = Date.fromString(cast(e.target, InputElement).value);
+			projectVO.startDate = Date.fromString(cast(e.target, InputElement).value);
 			onUpdate();
 		}
 		// inputStartDate.min = '';
 
 		inputEndDate = cast document.getElementById('formControleInputEndDate');
-		inputEndDate.value = DateTools.format(data.endDate, "%F");
+		inputEndDate.value = DateTools.format(projectVO.endDate, "%F");
 		inputEndDate.onchange = (e) -> {
 			trace('inputEndDate');
 			trace(cast(e.target, InputElement).value);
 			trace(e);
-			data.endDate = Date.fromString(cast(e.target, InputElement).value);
+			projectVO.endDate = Date.fromString(cast(e.target, InputElement).value);
 			onUpdate();
 		}
 
@@ -151,7 +164,7 @@ class Main {
 				var data = Json.parse(target.result);
 				console.log(data);
 				// store data
-				localStorage.setItem(KLUEZ_LOCAL_STOEAGE_ID, data);
+				localStorage.setItem(KLUEZ_LOCAL_STORAGE_ID, data);
 			};
 
 			// Read the file
@@ -170,8 +183,32 @@ class Main {
 		dropArea.addEventListener('drop', (event) -> {
 			event.stopPropagation();
 			event.preventDefault();
-			var fileList = event.dataTransfer.files;
+			trace(event);
+			var fileList:FileList = event.dataTransfer.files;
 			console.log(fileList);
+			// var fileList:FileList = event.target.files;
+			// console.log(fileList);
+			for (file in fileList) {
+				console.log(file);
+				// check extensino...
+			}
+			var file:File = fileList[0];
+
+			// Create a new FileReader() object
+			var reader = new FileReader();
+
+			// Setup the callback event to run when the file is read
+			// reader.onload = logFile;
+			reader.onload = (e) -> {
+				var target = e.target;
+				var data = Json.parse(target.result);
+				console.log(data);
+				// store data
+				localStorage.setItem(KLUEZ_LOCAL_STORAGE_ID, data);
+			};
+
+			// Read the file
+			reader.readAsText(file);
 		});
 	}
 
@@ -213,13 +250,13 @@ class Main {
 
 		// make sure h1 isn't dragable, set it outside sortable wrapper
 		var input:InputElement = cast document.createInputElement();
-		input.value = data.title;
-		input.dataset.klId = '${data._id}';
-		input.dataset.klTitle = '${data.title}';
+		input.value = projectVO.title;
+		input.dataset.klId = '${projectVO._id}';
+		input.dataset.klTitle = '${projectVO.title}';
 		input.className = '_form-control h1 form-controle-focus';
 		input.onblur = (e) -> {
 			trace('focusout' + e.target.value);
-			data.title = e.target.value;
+			projectVO.title = e.target.value;
 			onUpdate();
 		}
 		container.appendChild(input);
@@ -231,8 +268,8 @@ class Main {
 		container.appendChild(div);
 
 		// generate the list/milestonesn/issues
-		for (i in 0...data.milestones.length) {
-			var milestone:MilestoneVO = data.milestones[i];
+		for (i in 0...projectVO.milestones.length) {
+			var milestone:MilestoneVO = projectVO.milestones[i];
 			// trace(milestone);
 			var group = document.createDivElement();
 			group.dataset.klId = '${milestone._id}';
@@ -321,7 +358,7 @@ title="${issue.title}, ${issue.startDate}, ${issue.duration}"
 		// trace("onEndHandler " + evt);
 		// trace(evt);
 
-		var projectStartDate:Date = data.startDate;
+		var projectStartDate:Date = projectVO.startDate;
 		var currentDate:Date = projectStartDate;
 
 		var mileStoneCounter = 0;
@@ -332,8 +369,8 @@ title="${issue.title}, ${issue.startDate}, ${issue.duration}"
 
 		var _csv = new export.Csv().init();
 
-		var _projectVO:ProjectVO = new ProjectVO(data.title, data.startDate, data.endDate);
-		_projectVO._id = data._id;
+		var _projectVO:ProjectVO = new ProjectVO(projectVO.title, projectVO.startDate, projectVO.endDate);
+		_projectVO._id = projectVO._id;
 
 		var container = document.getElementById(KLUEZ_WRAPPER_ID);
 		for (i in 0...container.children.length) {
@@ -413,7 +450,7 @@ title="${issue.title}, ${issue.startDate}, ${issue.duration}"
 
 			kluezDataJson = Json.stringify(_projectVO, null, '  ');
 			kluezDataCsv = _csv;
-			kluezDataMermaid = new export.Mermaid().init(data.title, _mermaid);
+			kluezDataMermaid = new export.Mermaid().init(projectVO.title, _mermaid);
 
 			var div = document.getElementById('js-json');
 			div.innerText = kluezDataJson;
@@ -508,7 +545,7 @@ title="${issue.title}, ${issue.startDate}, ${issue.duration}"
 
 	function onDownloadHandler() {
 		this.filenameUpdate();
-		this.download(Json.stringify(data), '${this.fileName}.json', "text/plain");
+		this.download(Json.stringify(projectVO), '${this.fileName}.json', "text/plain");
 	}
 
 	static public function main() {

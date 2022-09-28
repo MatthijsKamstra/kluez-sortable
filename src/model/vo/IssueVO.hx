@@ -17,6 +17,19 @@ class IssueVO {
 			this.startDate = startDate;
 	}
 
+	public static function parse(arr:Array<IssueVOType>):Array<IssueVO> {
+		var array = [];
+
+		for (i in 0...arr.length) {
+			var _issueObj = arr[i];
+			var issue = new IssueVO(_issueObj.title, _issueObj.duration, _issueObj.startDate);
+			issue._id = _issueObj._id;
+			array.push(issue);
+		}
+
+		return array;
+	}
+
 	// ____________________________________ getter/setter ____________________________________
 
 	function get_title():String {
@@ -58,4 +71,11 @@ class IssueVO {
 	function set_startDate(value:Date):Date {
 		return startDate = value;
 	}
+}
+
+typedef IssueVOType = {
+	@:optional var _id:String;
+	var title:String;
+	var duration:String;
+	var startDate:Date;
 }

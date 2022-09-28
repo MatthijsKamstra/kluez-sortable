@@ -1,5 +1,6 @@
 package model.vo;
 
+import model.vo.IssueVO.IssueVOType;
 import utils.UUID;
 
 class MilestoneVO {
@@ -13,6 +14,20 @@ class MilestoneVO {
 		this._id = UUID.uuid();
 		this.title = title;
 		this.issues = [];
+	}
+
+	public static function parse(arr:Array<MilestoneVOType>):Array<MilestoneVO> {
+		var array = [];
+
+		for (i in 0...arr.length) {
+			var _milestoneObj = arr[i];
+			var milestone = new MilestoneVO(_milestoneObj.title);
+			milestone._id = _milestoneObj._id;
+			milestone.issues = IssueVO.parse(_milestoneObj.issues);
+			array.push(milestone);
+		}
+
+		return array;
 	}
 
 	// ____________________________________ getter/setter ____________________________________
@@ -40,4 +55,10 @@ class MilestoneVO {
 	// function set__type(value:String):String {
 	// 	return _type = value;
 	// }
+}
+
+typedef MilestoneVOType = {
+	@:optional var _id:String;
+	var title:String;
+	var issues:Array<IssueVOType>;
 }
