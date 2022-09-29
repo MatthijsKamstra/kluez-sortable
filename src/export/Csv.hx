@@ -1,5 +1,7 @@
 package export;
 
+import haxe.io.Encoding;
+import utils.DateUtil;
 import haxe.Log;
 
 using DateTools;
@@ -28,9 +30,36 @@ class Csv {
 
 	// public function exportPlanningDay(startDate:Date) {
 	// 	trace('-- exportPlanningDay -- ${startDate}');
-	public function init(?startDate:Date) {
+
+	/**
+	 *
+	 *
+	 * @param startDate 	(optional)
+	 * @param endDate 		(optional)
+	 */
+	public function init(?startDate:Date, ?endDate:Date) {
 		if (startDate == null)
 			startDate = new Date(2022, 0, 3, 0, 0, 0);
+
+		if (endDate == null)
+			endDate = startDate.delta(365.days());
+
+		trace(startDate);
+		trace(endDate);
+
+		var ms = endDate.getTime() - startDate.getTime();
+		var sec = ms / 1000;
+		var min = sec / 60;
+		var hour = min / 60;
+		var day = hour / 24;
+		var week = day / 7;
+
+		trace('ms: $ms');
+		trace('sec: $sec');
+		trace('min: $min');
+		trace('hour: $hour');
+		trace('day: $day');
+		trace('week: $week');
 
 		var content = '';
 
@@ -51,11 +80,13 @@ class Csv {
 		var string6 = '';
 
 		var weekCounter = 1;
+		weekCounter = weekNumber(startDate);
 
 		// var startDate = new Date(2022, 0, 3, 0, 0, 0);
 		var nextDate = startDate;
+		var weeks = 53;
 
-		for (i in 0...53) {
+		for (i in 0...weeks) {
 			var fiveDays = nextDate.delta(5.days());
 			string1 += '"${monthArr[nextDate.getMonth()]} ${nextDate.getFullYear()}",,,,,';
 			// string2 += '"${monthArr[nextDate.getMonth()]}",,,,,';

@@ -371,7 +371,11 @@ title="${issue.title}, ${issue.startDate}, ${issue.duration}"
 
 		var _mermaid = '';
 
-		var _csv = new export.Csv().init();
+		_mermaid += 'section ${StringUtil.cap('start and finish project')}\n';
+		_mermaid += '\t${StringUtil.cap('start date')} : ${DateTools.format(projectVO.startDate, "%F")}, 1d\n';
+		_mermaid += '\t${StringUtil.cap('end date')} : ${DateTools.format(projectVO.endDate, "%F")}, 1d\n';
+
+		var _csv = new export.Csv().init(projectVO.startDate, projectVO.endDate);
 
 		var _projectVO:ProjectVO = new ProjectVO(projectVO.title, projectVO.startDate, projectVO.endDate);
 		_projectVO._id = projectVO._id;

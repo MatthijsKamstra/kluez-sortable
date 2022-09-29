@@ -148,7 +148,7 @@ var Main = function() {
 	this.kluezDataJson = "";
 	var _gthis = this;
 	window.document.addEventListener("DOMContentLoaded",function(event) {
-		$global.console.log("" + model_constants_App.NAME + " Dom ready :: build: " + "2022-09-29 16:55:13" + " ");
+		$global.console.log("" + model_constants_App.NAME + " Dom ready :: build: " + "2022-09-29 18:50:39" + " ");
 		var json = _gthis.localStorage.getItem(_gthis.KLUEZ_LOCAL_STORAGE_ID);
 		if(json == null) {
 			$global.console.info("Create dummy test data");
@@ -385,7 +385,10 @@ Main.prototype = {
 		var issueCounter = 0;
 		var offsetinDaysCounter = 0;
 		var _mermaid = "";
-		var _csv = new export_Csv().init();
+		_mermaid += "section " + utils_StringUtil.cap("start and finish project") + "\n";
+		_mermaid += "\t" + utils_StringUtil.cap("start date") + " : " + DateTools.format(this.projectVO.startDate,"%F") + ", 1d  \n";
+		_mermaid += "\t" + utils_StringUtil.cap("end date") + " : " + DateTools.format(this.projectVO.endDate,"%F") + ", 1d  \n";
+		var _csv = new export_Csv().init(this.projectVO.startDate,this.projectVO.endDate);
 		var _projectVO = new model_vo_ProjectVO(this.projectVO.get_title(),this.projectVO.startDate,this.projectVO.endDate);
 		_projectVO.set__id(this.projectVO.get__id());
 		var container = window.document.getElementById(this.KLUEZ_WRAPPER_ID);
@@ -453,7 +456,7 @@ Main.prototype = {
 		}
 	}
 	,updateM: function() {
-		console.log("src/Main.hx:474:","updateM");
+		console.log("src/Main.hx:478:","updateM");
 	}
 	,download: function(content,fileName,contentType) {
 		var t = DateTools.format(new Date(),"%Y%m%d_%H%M%S");
@@ -527,10 +530,27 @@ var export_Csv = function() {
 };
 export_Csv.__name__ = true;
 export_Csv.prototype = {
-	init: function(startDate) {
+	init: function(startDate,endDate) {
 		if(startDate == null) {
 			startDate = new Date(2022,0,3,0,0,0);
 		}
+		if(endDate == null) {
+			endDate = new Date(startDate.getTime() + 31536000000.);
+		}
+		console.log("src/export/Csv.hx:47:",startDate);
+		console.log("src/export/Csv.hx:48:",endDate);
+		var ms = endDate.getTime() - startDate.getTime();
+		var sec = ms / 1000;
+		var min = sec / 60;
+		var hour = min / 60;
+		var day = hour / 24;
+		var week = day / 7;
+		console.log("src/export/Csv.hx:57:","ms: " + ms);
+		console.log("src/export/Csv.hx:58:","sec: " + sec);
+		console.log("src/export/Csv.hx:59:","min: " + min);
+		console.log("src/export/Csv.hx:60:","hour: " + hour);
+		console.log("src/export/Csv.hx:61:","day: " + day);
+		console.log("src/export/Csv.hx:62:","week: " + week);
 		var content = "";
 		var string1 = "";
 		var string2 = "";
@@ -539,9 +559,12 @@ export_Csv.prototype = {
 		var string5 = "";
 		var string6 = "";
 		var weekCounter = 1;
+		weekCounter = this.weekNumber(startDate);
 		var nextDate = startDate;
+		var weeks = 53;
 		var _g = 0;
-		while(_g < 53) {
+		var _g1 = weeks;
+		while(_g < _g1) {
 			var i = _g++;
 			var fiveDays = new Date(nextDate.getTime() + 432000000.);
 			string1 += "\"" + this.monthArr[nextDate.getMonth()] + " " + nextDate.getFullYear() + "\",,,,,";
@@ -556,6 +579,24 @@ export_Csv.prototype = {
 		content += ",," + string4 + "\n";
 		content += ",," + string5 + "\n";
 		return content;
+	}
+	,weekNumber: function(today) {
+		var firstDayOfYear = new Date(today.getFullYear(),0,1,0,0,0);
+		today = new Date(today.getFullYear(),today.getMonth(),today.getDate(),0,0,0);
+		var jan4 = new Date(today.getFullYear(),0,4,0,0,0);
+		var firstMondayOfYear = new Date(today.getFullYear(),0,4 - (jan4.getDay() - 1),0,0,0);
+		var dayNr2 = (today.getTime() - firstMondayOfYear.getTime()) / 86400000;
+		console.log("src/export/Csv.hx:145:","dayNr2 : " + dayNr2 + " ");
+		var weekNr = dayNr2 / 7;
+		console.log("src/export/Csv.hx:149:","weekNr: " + weekNr);
+		if(dayNr2 < 0) {
+			weekNr = 52;
+		} else {
+			weekNr = Math.floor(weekNr) + 1;
+		}
+		console.log("src/export/Csv.hx:156:","after weekNr: " + weekNr);
+		console.log("src/export/Csv.hx:157:","---------------");
+		return Math.floor(weekNr);
 	}
 	,__class__: export_Csv
 };
