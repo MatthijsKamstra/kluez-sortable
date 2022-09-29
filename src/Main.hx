@@ -56,7 +56,7 @@ class Main {
 			generate();
 
 			// hmmmm, doesn't work yet.
-			var csv = new Csv();
+			// var csv = new Csv();
 			// trace(csv.weekNumber(Date.now()));
 			// trace(csv.weekNumber(new Date(2022, 0, 1, 0, 0, 0)));
 			// trace(csv.weekNumber(new Date(2022, 8, 1, 0, 0, 0)));
@@ -353,6 +353,7 @@ title="${issue.title}, ${issue.startDate}, ${issue.duration}"
 
 	function onUpdate() {
 		onEndHandler(null);
+		localStorage.setItem(KLUEZ_LOCAL_STORAGE_ID, Json.stringify(projectVO));
 		updateM();
 	}
 

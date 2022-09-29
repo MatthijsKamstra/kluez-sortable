@@ -1,4 +1,5 @@
 # Libraries you like to use (http://lib.haxe.org/)
+--library buddy
 # -lib js-kit
 # -lib hxnodejs#
 # -lib vue

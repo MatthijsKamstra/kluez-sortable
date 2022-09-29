@@ -102,12 +102,49 @@ class Csv {
 	// 	// Display the calculated result
 	// 	document.write("Week number of " + currentDate + " is :   " + weekNumber);
 	// }
-	public function weekNumber(date:Date) {
-		trace("date: " + date);
-		var firstJanuary = new Date(date.getFullYear(), 0, 1, 0, 0, 0);
+	public function weekNumber(today:Date) {
+		trace('Csv weekNumber - today: $today - formated(${DateTools.format(today, "%F")}) -- (${today.getFullYear()}--${today.getMonth()}--${today.getDate()})');
+		// trace(DateTools.format(today, "%F"));
+		var firstDayOfYear = new Date(today.getFullYear(), 0, 1, 0, 0, 0); // set hours, min, sec to zero
+		trace('firstDayOfYear: ' + firstDayOfYear + ' - formated(${DateTools.format(firstDayOfYear, "%F")})');
+		today = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0); // set hours, min, sec to zero
+		trace('today: ' + today + ' - formated(${DateTools.format(today, "%F")})');
 
-		var dayNr = Math.floor((date.getTime() - firstJanuary.getTime()) / (24 * 60 * 60 * 1000));
-		var weekNr = Math.ceil((dayNr + firstJanuary.getDay()) / 7);
+		// trace(today.getTime());
+		// trace(firstDayOfYear.getTime());
+		// trace(firstDayOfYear.getDay());
+
+		var dayNr = Math.floor((today.getTime() - firstDayOfYear.getTime()) / (24 * 60 * 60 * 1000));
+		// var dayNr = Math.floor((date - firstDayOfYear) / (24 * 60 * 60 * 1000));
+		var dayNr2 = (today.getTime() - firstDayOfYear.getTime()) / (24 * 60 * 60 * 1000);
+		trace('dayNr: $dayNr');
+		trace('dayNr2: $dayNr2');
+		// var weekNr = Math.ceil((dayNr + firstDayOfYear.getDay()) / 7);
+		var weekNr = Math.ceil(dayNr / 7);
+		var weekNr2 = Math.ceil((dayNr + firstDayOfYear.getDay()) / 7);
+		trace('weekNr: ${(dayNr / 7)}');
+		trace('weekNr: $weekNr');
+		trace('weekNr2: $weekNr2');
+		trace('-----');
 		return weekNr;
+	}
+
+	// public function weekNumber3(currentdate:Date) {
+	// 	var oneJan = new Date(currentdate.getFullYear(), 0, 1, 0, 0, 0);
+	// 	var numberOfDays = Math.floor((currentdate.getTime() - oneJan.getTime()) / (24 * 60 * 60 * 1000));
+	// 	var result = Math.ceil((currentdate.getDay() + 1 + numberOfDays) / 7);
+	// 	return result;
+	// }
+	// public function weekNumber2(today:Date) {
+	// 	today = new Date(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate(), 0, 0, 0);
+	// 	// today.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+	// 	var yearStart = new Date(today.getUTCFullYear(), 0, 1, 0, 0, 0);
+	// 	var weekNo = Math.ceil((((today.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+	// 	return weekNo;
+	// }
+	public function weekNumber2(today:Date) {
+		// 4janarie is week 1, count vandaar
+		var jan4 = new Date(today.getFullYear(), 0, 1, 0, 0, 0);
+		jan4.getDay(); // 0  sundayu, 1 monday
 	}
 }

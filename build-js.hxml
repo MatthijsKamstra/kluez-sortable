@@ -1,5 +1,5 @@
 # -lib hxColorToolkit
-# --library buddy
+--library buddy
 --library sortablejs
 -cp src
 -main Main

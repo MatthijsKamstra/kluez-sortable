@@ -148,7 +148,7 @@ var Main = function() {
 	this.kluezDataJson = "";
 	var _gthis = this;
 	window.document.addEventListener("DOMContentLoaded",function(event) {
-		$global.console.log("" + model_constants_App.NAME + " Dom ready :: build: " + "2022-09-28 14:15:22" + " ");
+		$global.console.log("" + model_constants_App.NAME + " Dom ready :: build: " + "2022-09-29 15:22:00" + " ");
 		var json = _gthis.localStorage.getItem(_gthis.KLUEZ_LOCAL_STORAGE_ID);
 		if(json == null) {
 			$global.console.info("Create dummy test data");
@@ -159,7 +159,6 @@ var Main = function() {
 		}
 		_gthis.setupUX();
 		_gthis.generate();
-		var csv = new export_Csv();
 	});
 };
 Main.__name__ = true;
@@ -376,6 +375,7 @@ Main.prototype = {
 	}
 	,onUpdate: function() {
 		this.onEndHandler(null);
+		this.localStorage.setItem(this.KLUEZ_LOCAL_STORAGE_ID,JSON.stringify(this.projectVO));
 		this.updateM();
 	}
 	,onEndHandler: function(evt) {
@@ -453,7 +453,7 @@ Main.prototype = {
 		}
 	}
 	,updateM: function() {
-		console.log("src/Main.hx:473:","updateM");
+		console.log("src/Main.hx:474:","updateM");
 	}
 	,download: function(content,fileName,contentType) {
 		var t = DateTools.format(new Date(),"%Y%m%d_%H%M%S");
