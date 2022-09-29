@@ -94,57 +94,36 @@ class Csv {
 		return content;
 	}
 
-	// function test() {
-	// 	currentDate = new Date();
-	// 	startDate = new Date(currentDate.getFullYear(), 0, 1);
-	// 	var days = Math.floor((currentDate - startDate) / (24 * 60 * 60 * 1000));
-	// 	var weekNumber = Math.ceil(days / 7);
-	// 	// Display the calculated result
-	// 	document.write("Week number of " + currentDate + " is :   " + weekNumber);
-	// }
-	public function weekNumber(today:Date) {
-		trace('Csv weekNumber - today: $today - formated(${DateTools.format(today, "%F")}) -- (${today.getFullYear()}--${today.getMonth()}--${today.getDate()})');
-		// trace(DateTools.format(today, "%F"));
+	public function weekNumber(today:Date):Int {
 		var firstDayOfYear = new Date(today.getFullYear(), 0, 1, 0, 0, 0); // set hours, min, sec to zero
-		trace('firstDayOfYear: ' + firstDayOfYear + ' - formated(${DateTools.format(firstDayOfYear, "%F")})');
 		today = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0); // set hours, min, sec to zero
-		trace('today: ' + today + ' - formated(${DateTools.format(today, "%F")})');
+		// trace('today: ' + today + ' - formated(${DateTools.format(today, "%F")})');
 
-		// trace(today.getTime());
-		// trace(firstDayOfYear.getTime());
-		// trace(firstDayOfYear.getDay());
+		// var dayNr = Math.floor((today.getTime() - firstDayOfYear.getTime()) / (24 * 60 * 60 * 1000));
+		// trace('dayNr : ${dayNr} ');
 
-		var dayNr = Math.floor((today.getTime() - firstDayOfYear.getTime()) / (24 * 60 * 60 * 1000));
-		// var dayNr = Math.floor((date - firstDayOfYear) / (24 * 60 * 60 * 1000));
-		var dayNr2 = (today.getTime() - firstDayOfYear.getTime()) / (24 * 60 * 60 * 1000);
-		trace('dayNr: $dayNr');
-		trace('dayNr2: $dayNr2');
-		// var weekNr = Math.ceil((dayNr + firstDayOfYear.getDay()) / 7);
-		var weekNr = Math.ceil(dayNr / 7);
-		var weekNr2 = Math.ceil((dayNr + firstDayOfYear.getDay()) / 7);
-		trace('weekNr: ${(dayNr / 7)}');
-		trace('weekNr: $weekNr');
-		trace('weekNr2: $weekNr2');
-		trace('-----');
-		return weekNr;
-	}
-
-	// public function weekNumber3(currentdate:Date) {
-	// 	var oneJan = new Date(currentdate.getFullYear(), 0, 1, 0, 0, 0);
-	// 	var numberOfDays = Math.floor((currentdate.getTime() - oneJan.getTime()) / (24 * 60 * 60 * 1000));
-	// 	var result = Math.ceil((currentdate.getDay() + 1 + numberOfDays) / 7);
-	// 	return result;
-	// }
-	// public function weekNumber2(today:Date) {
-	// 	today = new Date(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate(), 0, 0, 0);
-	// 	// today.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
-	// 	var yearStart = new Date(today.getUTCFullYear(), 0, 1, 0, 0, 0);
-	// 	var weekNo = Math.ceil((((today.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
-	// 	return weekNo;
-	// }
-	public function weekNumber2(today:Date) {
 		// 4janarie is week 1, count vandaar
-		var jan4 = new Date(today.getFullYear(), 0, 1, 0, 0, 0);
-		jan4.getDay(); // 0  sundayu, 1 monday
+		var jan4 = new Date(today.getFullYear(), 0, 4, 0, 0, 0);
+		// trace('4 jan: ' + jan4.getDay(), dayArr[jan4.getDay()]); // 0  sundayu, 1 monday
+
+		var firstMondayOfYear = new Date(today.getFullYear(), 0, (4 - (jan4.getDay() - 1)), 0, 0, 0);
+		// trace('first monday of year: ' + firstMondayOfYear.getDay(), dayArr[firstMondayOfYear.getDay()]);
+
+		// var dayNr2 = Math.floor((today.getTime() - firstMondayOfYear.getTime()) / (24 * 60 * 60 * 1000));
+		var dayNr2 = ((today.getTime() - firstMondayOfYear.getTime()) / (24 * 60 * 60 * 1000));
+		trace('dayNr2 : ${dayNr2} ');
+
+		// var weekNr = Math.ceil(dayNr2 / 7);
+		var weekNr = (dayNr2 / 7);
+		trace('weekNr: ${weekNr}');
+
+		if (dayNr2 < 0) {
+			weekNr = 52;
+		} else {
+			weekNr = Math.floor(weekNr) + 1;
+		}
+		trace('after weekNr: ${weekNr}');
+		trace('---------------');
+		return Math.floor(weekNr);
 	}
 }
