@@ -457,6 +457,8 @@ title="${issue.title}, ${issue.startDate}, ${issue.duration}"
 				};
 			}
 
+			projectVO = _projectVO;
+
 			// console.info(_projectVO);
 			// console.info(Json.stringify(_projectVO));
 
@@ -471,6 +473,8 @@ title="${issue.title}, ${issue.startDate}, ${issue.duration}"
 			div2.innerText = kluezDataCsv;
 			var div3 = document.getElementById('js-mermaid');
 			div3.innerText = kluezDataMermaid;
+
+			localStorage.setItem(KLUEZ_LOCAL_STORAGE_ID, Json.stringify(projectVO));
 		}
 	}
 

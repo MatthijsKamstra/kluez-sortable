@@ -148,7 +148,7 @@ var Main = function() {
 	this.kluezDataJson = "";
 	var _gthis = this;
 	window.document.addEventListener("DOMContentLoaded",function(event) {
-		$global.console.log("" + model_constants_App.NAME + " Dom ready :: build: " + "2022-09-29 18:50:39" + " ");
+		$global.console.log("" + model_constants_App.NAME + " Dom ready :: build: " + "2022-09-30 09:58:57" + " ");
 		var json = _gthis.localStorage.getItem(_gthis.KLUEZ_LOCAL_STORAGE_ID);
 		if(json == null) {
 			$global.console.info("Create dummy test data");
@@ -386,8 +386,8 @@ Main.prototype = {
 		var offsetinDaysCounter = 0;
 		var _mermaid = "";
 		_mermaid += "section " + utils_StringUtil.cap("start and finish project") + "\n";
-		_mermaid += "\t" + utils_StringUtil.cap("start date") + " : " + DateTools.format(this.projectVO.startDate,"%F") + ", 1d  \n";
-		_mermaid += "\t" + utils_StringUtil.cap("end date") + " : " + DateTools.format(this.projectVO.endDate,"%F") + ", 1d  \n";
+		_mermaid += "\t" + utils_StringUtil.cap("start date") + " : " + DateTools.format(this.projectVO.startDate,"%F") + ", 1d\n";
+		_mermaid += "\t" + utils_StringUtil.cap("end date") + " : " + DateTools.format(this.projectVO.endDate,"%F") + ", 1d\n";
 		var _csv = new export_Csv().init(this.projectVO.startDate,this.projectVO.endDate);
 		var _projectVO = new model_vo_ProjectVO(this.projectVO.get_title(),this.projectVO.startDate,this.projectVO.endDate);
 		_projectVO.set__id(this.projectVO.get__id());
@@ -443,6 +443,7 @@ Main.prototype = {
 					}
 				}
 			}
+			this.projectVO = _projectVO;
 			this.kluezDataJson = JSON.stringify(_projectVO,null,"  ");
 			this.kluezDataCsv = _csv;
 			this.kluezDataMermaid = new export_Mermaid().init(this.projectVO.get_title(),_mermaid);
@@ -453,10 +454,11 @@ Main.prototype = {
 			div2.innerText = this.kluezDataCsv;
 			var div3 = window.document.getElementById("js-mermaid");
 			div3.innerText = this.kluezDataMermaid;
+			this.localStorage.setItem(this.KLUEZ_LOCAL_STORAGE_ID,JSON.stringify(this.projectVO));
 		}
 	}
 	,updateM: function() {
-		console.log("src/Main.hx:478:","updateM");
+		console.log("src/Main.hx:482:","updateM");
 	}
 	,download: function(content,fileName,contentType) {
 		var t = DateTools.format(new Date(),"%Y%m%d_%H%M%S");
