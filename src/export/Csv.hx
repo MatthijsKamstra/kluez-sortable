@@ -7,19 +7,8 @@ import haxe.Log;
 using DateTools;
 
 class Csv {
-	var monthArr = [
-		'januari', 'februari', 'maart', 'april', 'mei', 'juni', 'juli', 'augustus', 'september', 'oktober', 'november', 'december'
-	];
-	var dayArr = [
-		'zondag',
-		'maandag',
-		'dinsdag',
-		'woensdag',
-		'donderdag',
-		'vrijdag',
-		'zaterdag',
-		'zondag'
-	];
+	var days:Int = -1;
+	var weeks:Int = 53;
 
 	public function new() {
 		// trace('Csv');
@@ -44,8 +33,8 @@ class Csv {
 		if (endDate == null)
 			endDate = startDate.delta(365.days());
 
-		trace(startDate);
-		trace(endDate);
+		// trace(startDate);
+		// trace(endDate);
 
 		var ms = endDate.getTime() - startDate.getTime();
 		var sec = ms / 1000;
@@ -54,12 +43,15 @@ class Csv {
 		var day = hour / 24;
 		var week = day / 7;
 
-		trace('ms: $ms');
-		trace('sec: $sec');
-		trace('min: $min');
-		trace('hour: $hour');
-		trace('day: $day');
-		trace('week: $week');
+		days = Math.ceil(day);
+		weeks = Math.ceil(week);
+
+		// trace('ms: $ms');
+		// trace('sec: $sec');
+		// trace('min: $min');
+		// trace('hour: $hour');
+		// trace('day: $day');
+		// trace('week: $week');
 
 		var content = '';
 
@@ -84,11 +76,11 @@ class Csv {
 
 		// var startDate = new Date(2022, 0, 3, 0, 0, 0);
 		var nextDate = startDate;
-		var weeks = 53;
+		weeks = Math.ceil(week);
 
 		for (i in 0...weeks) {
 			var fiveDays = nextDate.delta(5.days());
-			string1 += '"${monthArr[nextDate.getMonth()]} ${nextDate.getFullYear()}",,,,,';
+			string1 += '"${DateUtil.monthNames[nextDate.getMonth()]} ${nextDate.getFullYear()}",,,,,';
 			// string2 += '"${monthArr[nextDate.getMonth()]}",,,,,';
 			string3 += '"Week ${weekCounter}",,,,,';
 			// string1 += '"Week ${weekCounter}\n${nextDate.getDate()}-${(nextDate.getMonth() + 1)} / ${fiveDays.getDate()}-${(fiveDays.getMonth() + 1)}",';
@@ -117,11 +109,36 @@ class Csv {
 		// 	arr[random] = 'x';
 		// 	var _string5 = arr.join(',');
 
-		// 	content += '"${sectionArr[i]}","${titleArr[i]}",' + _string5 + '\n';
+		// 	content += '"${'phase'}","${'title'}",' + _string5 + '\n';
 		// }
 
 		// sys.io.File.saveContent(source, content);
 
+		return content;
+	}
+
+	public function add(phase:String, title:String, offsetDay:Int, duration:Int):String {
+		trace('add');
+		trace(phase, title, offsetDay, duration);
+		var str = '';
+		// for (i in 0...(days)) {
+		// 	str += ',';
+		// }
+		for (i in 0...(offsetDay)) {
+			str += ',';
+		}
+		for (i in 0...(duration)) {
+			str += 'x,';
+		}
+		for (i in 0...(days - offsetDay - duration)) {
+			str += ',';
+		}
+		var content = '';
+		if (phase == '' && title == '') {
+			content = '${phase},${title},' + str + '\n';
+		} else {
+			content = '"${phase}","${title}",' + str + '\n';
+		}
 		return content;
 	}
 

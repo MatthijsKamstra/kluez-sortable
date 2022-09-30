@@ -4,6 +4,57 @@ using StringTools;
 using DateTools;
 
 class DateUtil {
+	public static var maandNamen = [
+		// nl
+		'Januari',
+		'Februari',
+		'Maart',
+		'April',
+		'Mei',
+		'Juni',
+		'Juli',
+		'Augustus',
+		'September',
+		'Oktober',
+		'November',
+		'December'
+	];
+	public static var monthNames = [
+		// monthsw
+		'January',
+		'February',
+		'March',
+		'April',
+		'May',
+		'June',
+		'July',
+		'August',
+		'September',
+		'October',
+		'November',
+		'December'
+	];
+	public static var dagNamen = [
+		// nl
+		'zondag',
+		'maandag',
+		'dinsdag',
+		'woensdag',
+		'donderdag',
+		'vrijdag',
+		'zaterdag',
+	];
+	public static var dayNames = [
+		// days of the week
+		'Sunday',
+		'Monday',
+		'Tuesday',
+		'Wednesday',
+		'Thursday',
+		'Friday',
+		'Saturday',
+	];
+
 	public function new() {
 		trace('DateUtil');
 	}

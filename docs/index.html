@@ -46,7 +46,7 @@
 		</div>
 
 		<ul>
-			<li><a href="#kluez-sortable-generate">kluez-sortable-generate</a> </li>
+			<li><a href="#wrapper">kluez-sortable-generate</a> </li>
 			<li><a href="https://github.com/SortableJS/Sortable" target="_blank">Sortable</a> </li>
 			<li><a href="https://getbootstrap.com/docs/5.2/getting-started/introduction/" target="_blank">Bootstrap</a>
 			<li><a href="https://mermaid-js.github.io/mermaid/#/gantt" target="_blank">Mermaid</a>
@@ -101,12 +101,14 @@
 
 
 			<div class="col-6 mb-3">
-				<label for="formControleInputStartDate" class="form-label">Start date:</label>
+				<label for="formControleInputStartDate" class="form-label">Start date: <span
+						id="js-date-start"></span></label>
 				<input type="date" class="form-control" id="formControleInputStartDate" placeholder="name@example.com"
 					value="">
 			</div>
 			<div class="col-6 mb-3">
-				<label for="formControleInputEndDate" class="form-label">End date:</label>
+				<label for="formControleInputEndDate" class="form-label">End date: <span
+						id="js-date-end"></span></label>
 				<input type="date" class="form-control" id="formControleInputEndDate" placeholder="name@example.com"
 					value="">
 			</div>

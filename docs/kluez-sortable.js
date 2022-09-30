@@ -148,7 +148,7 @@ var Main = function() {
 	this.kluezDataJson = "";
 	var _gthis = this;
 	window.document.addEventListener("DOMContentLoaded",function(event) {
-		$global.console.log("" + model_constants_App.NAME + " Dom ready :: build: " + "2022-09-30 09:58:57" + " ");
+		$global.console.log("" + model_constants_App.NAME + " Dom ready :: build: " + "2022-09-30 11:58:03" + " ");
 		var json = _gthis.localStorage.getItem(_gthis.KLUEZ_LOCAL_STORAGE_ID);
 		if(json == null) {
 			$global.console.info("Create dummy test data");
@@ -185,8 +185,8 @@ Main.prototype = {
 		var issue7 = new model_vo_IssueVO("g issue","2d");
 		var issue8 = new model_vo_IssueVO("e issue","10d");
 		milestone3.issues = [issue6,issue7,issue8];
-		console.log("src/Main.hx:89:",project1);
-		console.log("src/Main.hx:90:",JSON.stringify(project1));
+		haxe_Log.trace(project1,{ fileName : "src/Main.hx", lineNumber : 89, className : "Main", methodName : "setupDataObject"});
+		haxe_Log.trace(JSON.stringify(project1),{ fileName : "src/Main.hx", lineNumber : 90, className : "Main", methodName : "setupDataObject"});
 		this.projectVO = project1;
 		this.localStorage.setItem(this.KLUEZ_LOCAL_STORAGE_ID,JSON.stringify(this.projectVO));
 	}
@@ -211,40 +211,42 @@ Main.prototype = {
 		var checkMilestone = window.document.getElementById("checkDragMilestones");
 		var checkIssue = window.document.getElementById("checkDragIssues");
 		checkMilestone.onchange = function(e) {
-			console.log("src/Main.hx:112:","toggle milestons" + Std.string(e));
-			console.log("src/Main.hx:113:",(js_Boot.__cast(e.target , HTMLInputElement)).id);
+			haxe_Log.trace("toggle milestons" + Std.string(e),{ fileName : "src/Main.hx", lineNumber : 112, className : "Main", methodName : "setupUX"});
+			haxe_Log.trace((js_Boot.__cast(e.target , HTMLInputElement)).id,{ fileName : "src/Main.hx", lineNumber : 113, className : "Main", methodName : "setupUX"});
 		};
 		checkIssue.onchange = function(e) {
-			console.log("src/Main.hx:116:","toggle issue " + Std.string(e));
-			console.log("src/Main.hx:117:",e);
+			haxe_Log.trace("toggle issue " + Std.string(e),{ fileName : "src/Main.hx", lineNumber : 116, className : "Main", methodName : "setupUX"});
+			haxe_Log.trace(e,{ fileName : "src/Main.hx", lineNumber : 117, className : "Main", methodName : "setupUX"});
 		};
 		this.inputStartDate = window.document.getElementById("formControleInputStartDate");
 		var tmp = HxOverrides.strDate(StringTools.replace(StringTools.replace("" + Std.string(this.projectVO.startDate),"T"," "),".000Z",""));
 		this.projectVO.startDate = tmp;
 		var tmp = HxOverrides.strDate(StringTools.replace(StringTools.replace("" + Std.string(this.projectVO.endDate),"T"," "),".000Z",""));
 		this.projectVO.endDate = tmp;
+		(js_Boot.__cast(window.document.getElementById("js-date-start") , HTMLSpanElement)).innerHTML = this.readableDate(this.projectVO.startDate);
 		this.inputStartDate.value = DateTools.format(this.projectVO.startDate,"%F");
 		this.inputStartDate.onchange = function(e) {
-			console.log("src/Main.hx:128:","inputStartDate");
-			console.log("src/Main.hx:129:",(js_Boot.__cast(e.target , HTMLInputElement)).value);
-			console.log("src/Main.hx:130:",e);
+			haxe_Log.trace("inputStartDate",{ fileName : "src/Main.hx", lineNumber : 129, className : "Main", methodName : "setupUX"});
+			haxe_Log.trace((js_Boot.__cast(e.target , HTMLInputElement)).value,{ fileName : "src/Main.hx", lineNumber : 130, className : "Main", methodName : "setupUX"});
+			haxe_Log.trace(e,{ fileName : "src/Main.hx", lineNumber : 131, className : "Main", methodName : "setupUX"});
 			var tmp = HxOverrides.strDate((js_Boot.__cast(e.target , HTMLInputElement)).value);
 			_gthis.projectVO.startDate = tmp;
 			_gthis.onUpdate();
 		};
+		(js_Boot.__cast(window.document.getElementById("js-date-end") , HTMLSpanElement)).innerHTML = this.readableDate(this.projectVO.endDate);
 		this.inputEndDate = window.document.getElementById("formControleInputEndDate");
 		this.inputEndDate.value = DateTools.format(this.projectVO.endDate,"%F");
 		this.inputEndDate.onchange = function(e) {
-			console.log("src/Main.hx:139:","inputEndDate");
-			console.log("src/Main.hx:140:",(js_Boot.__cast(e.target , HTMLInputElement)).value);
-			console.log("src/Main.hx:141:",e);
+			haxe_Log.trace("inputEndDate",{ fileName : "src/Main.hx", lineNumber : 141, className : "Main", methodName : "setupUX"});
+			haxe_Log.trace((js_Boot.__cast(e.target , HTMLInputElement)).value,{ fileName : "src/Main.hx", lineNumber : 142, className : "Main", methodName : "setupUX"});
+			haxe_Log.trace(e,{ fileName : "src/Main.hx", lineNumber : 143, className : "Main", methodName : "setupUX"});
 			var tmp = HxOverrides.strDate((js_Boot.__cast(e.target , HTMLInputElement)).value);
 			_gthis.projectVO.endDate = tmp;
 			_gthis.onUpdate();
 		};
 		var fileSelector = window.document.getElementById("formFile");
 		fileSelector.addEventListener("change",function(event) {
-			console.log("src/Main.hx:148:",event);
+			haxe_Log.trace(event,{ fileName : "src/Main.hx", lineNumber : 150, className : "Main", methodName : "setupUX"});
 			if(event.target.files.length <= 0) {
 				return;
 			}
@@ -275,7 +277,7 @@ Main.prototype = {
 		dropArea.addEventListener("drop",function(event) {
 			event.stopPropagation();
 			event.preventDefault();
-			console.log("src/Main.hx:189:",event);
+			haxe_Log.trace(event,{ fileName : "src/Main.hx", lineNumber : 191, className : "Main", methodName : "setupUX"});
 			var fileList = event.dataTransfer.files;
 			$global.console.log(fileList);
 			var _g = 0;
@@ -295,6 +297,11 @@ Main.prototype = {
 			reader.readAsText(file);
 		});
 	}
+	,readableDate: function(current) {
+		var str = "";
+		str += "" + utils_DateUtil.dayNames[current.getDay()] + " " + current.getDate() + " " + utils_DateUtil.monthNames[current.getMonth()] + " " + current.getFullYear();
+		return str;
+	}
 	,generate: function() {
 		var _gthis = this;
 		var container = window.document.getElementById("wrapper");
@@ -306,7 +313,7 @@ Main.prototype = {
 		input.dataset.klTitle = "" + tmp;
 		input.className = "_form-control h1 form-controle-focus";
 		input.onblur = function(e) {
-			console.log("src/Main.hx:261:","focusout" + e.target.value);
+			haxe_Log.trace("focusout" + e.target.value,{ fileName : "src/Main.hx", lineNumber : 269, className : "Main", methodName : "generate"});
 			_gthis.projectVO.set_title(e.target.value);
 			_gthis.onUpdate();
 		};
@@ -335,7 +342,7 @@ Main.prototype = {
 			input[0].className = "_form-control h2 form-controle-focus";
 			input[0].onblur = (function(input,milestone) {
 				return function(e) {
-					console.log("src/Main.hx:293:","focusout" + e.target.value);
+					haxe_Log.trace("focusout" + e.target.value,{ fileName : "src/Main.hx", lineNumber : 301, className : "Main", methodName : "generate"});
 					milestone[0].set_title(e.target.value);
 					input[0].dataset.klTitle = e.target.value;
 					_gthis.onUpdate();
@@ -368,27 +375,30 @@ Main.prototype = {
 					return true;
 				}
 			}, onEnd : function(evt) {
-				_gthis.onEndHandler(evt);
+				_gthis.generateOutput();
 			}});
 		}
 		this.onUpdate();
 	}
 	,onUpdate: function() {
-		this.onEndHandler(null);
+		$global.console.info("👉 onUpdate");
+		this.generateOutput();
 		this.localStorage.setItem(this.KLUEZ_LOCAL_STORAGE_ID,JSON.stringify(this.projectVO));
-		this.updateM();
 	}
-	,onEndHandler: function(evt) {
+	,generateOutput: function() {
 		var projectStartDate = this.projectVO.startDate;
 		var currentDate = projectStartDate;
 		var mileStoneCounter = 0;
 		var issueCounter = 0;
 		var offsetinDaysCounter = 0;
 		var _mermaid = "";
-		_mermaid += "section " + utils_StringUtil.cap("start and finish project") + "\n";
-		_mermaid += "\t" + utils_StringUtil.cap("start date") + " : " + DateTools.format(this.projectVO.startDate,"%F") + ", 1d\n";
-		_mermaid += "\t" + utils_StringUtil.cap("end date") + " : " + DateTools.format(this.projectVO.endDate,"%F") + ", 1d\n";
-		var _csv = new export_Csv().init(this.projectVO.startDate,this.projectVO.endDate);
+		_mermaid += "section " + utils_StringUtil.cap("Start and Finish project") + "\n";
+		_mermaid += "\t" + utils_StringUtil.cap("Start date (" + this.readableDate(this.projectVO.startDate) + ")") + " : " + DateTools.format(this.projectVO.startDate,"%F") + ", 1d\n";
+		_mermaid += "\t" + utils_StringUtil.cap("End date (" + this.readableDate(this.projectVO.endDate) + ")") + " : " + DateTools.format(this.projectVO.endDate,"%F") + ", 1d\n";
+		var c = new export_Csv();
+		var _csv = c.init(this.projectVO.startDate,this.projectVO.endDate);
+		_csv += c.add("","",0,0);
+		_csv += c.add("phase","title",0,0);
 		var _projectVO = new model_vo_ProjectVO(this.projectVO.get_title(),this.projectVO.startDate,this.projectVO.endDate);
 		_projectVO.set__id(this.projectVO.get__id());
 		var container = window.document.getElementById(this.KLUEZ_WRAPPER_ID);
@@ -416,15 +426,16 @@ Main.prototype = {
 					var _g5 = child.children.length;
 					while(_g4 < _g5) {
 						var k = _g4++;
-						var c = child.children[k];
-						var _title = c.dataset.klTitle;
-						var _duration = c.dataset.klDuration;
+						var ch = child.children[k];
+						var _title = ch.dataset.klTitle;
+						var _duration = ch.dataset.klDuration;
 						var _durationTimestampDays = utils_DateUtil.convert(_duration);
 						var _durationDayInt = utils_DateUtil.convert2DayInt(_duration);
-						c.dataset.klStartDate = DateTools.format(currentDate,"%F");
-						c.title = "" + _title + ", " + DateTools.format(currentDate,"%F") + ", " + _duration;
+						ch.dataset.klStartDate = DateTools.format(currentDate,"%F");
+						ch.title = "" + _title + ", " + DateTools.format(currentDate,"%F") + ", " + _duration;
+						_csv += c.add(_mileStoneVO.get_title(),_title + (" (" + _duration + " - " + DateTools.format(currentDate,"%F") + ")"),offsetinDaysCounter,_durationDayInt);
 						var _issueVO = new model_vo_IssueVO(_title,_duration);
-						_issueVO.set__id(c.dataset.klId);
+						_issueVO.set__id(ch.dataset.klId);
 						_issueVO.set_startDate(currentDate);
 						_mileStoneVO.issues.push(_issueVO);
 						if(issueCounter == 0) {
@@ -432,9 +443,9 @@ Main.prototype = {
 						} else {
 							_mermaid += "\t" + utils_StringUtil.cap(_issueVO.get_title()) + " : a" + issueCounter + ", after a" + (issueCounter - 1) + ", " + _issueVO.get_duration() + "  \n";
 						}
-						var badge = c.querySelector(".badge");
+						var badge = ch.querySelector(".badge");
 						badge.innerHTML = "" + (issueCounter + 1);
-						var klBox = c.querySelector(".kl-box");
+						var klBox = ch.querySelector(".kl-box");
 						var offset = 50;
 						klBox.setAttribute("style","left:" + offsetinDaysCounter * offset + "px;width:" + _durationDayInt * offset + "px;");
 						++issueCounter;
@@ -444,7 +455,7 @@ Main.prototype = {
 				}
 			}
 			this.projectVO = _projectVO;
-			this.kluezDataJson = JSON.stringify(_projectVO,null,"  ");
+			this.kluezDataJson = JSON.stringify(this.projectVO,null,"  ");
 			this.kluezDataCsv = _csv;
 			this.kluezDataMermaid = new export_Mermaid().init(this.projectVO.get_title(),_mermaid);
 			this.kluezDataMermaidHTML = new export_Mermaid().html(this.projectVO.get_title(),_mermaid);
@@ -456,9 +467,6 @@ Main.prototype = {
 			div3.innerText = this.kluezDataMermaid;
 			this.localStorage.setItem(this.KLUEZ_LOCAL_STORAGE_ID,JSON.stringify(this.projectVO));
 		}
-	}
-	,updateM: function() {
-		console.log("src/Main.hx:482:","updateM");
 	}
 	,download: function(content,fileName,contentType) {
 		var t = DateTools.format(new Date(),"%Y%m%d_%H%M%S");
@@ -528,7 +536,8 @@ StringTools.hex = function(n,digits) {
 	return s;
 };
 var export_Csv = function() {
-	this.monthArr = ["januari","februari","maart","april","mei","juni","juli","augustus","september","oktober","november","december"];
+	this.weeks = 53;
+	this.days = -1;
 };
 export_Csv.__name__ = true;
 export_Csv.prototype = {
@@ -539,20 +548,14 @@ export_Csv.prototype = {
 		if(endDate == null) {
 			endDate = new Date(startDate.getTime() + 31536000000.);
 		}
-		console.log("src/export/Csv.hx:47:",startDate);
-		console.log("src/export/Csv.hx:48:",endDate);
 		var ms = endDate.getTime() - startDate.getTime();
 		var sec = ms / 1000;
 		var min = sec / 60;
 		var hour = min / 60;
 		var day = hour / 24;
 		var week = day / 7;
-		console.log("src/export/Csv.hx:57:","ms: " + ms);
-		console.log("src/export/Csv.hx:58:","sec: " + sec);
-		console.log("src/export/Csv.hx:59:","min: " + min);
-		console.log("src/export/Csv.hx:60:","hour: " + hour);
-		console.log("src/export/Csv.hx:61:","day: " + day);
-		console.log("src/export/Csv.hx:62:","week: " + week);
+		this.days = Math.ceil(day);
+		this.weeks = Math.ceil(week);
 		var content = "";
 		var string1 = "";
 		var string2 = "";
@@ -563,13 +566,13 @@ export_Csv.prototype = {
 		var weekCounter = 1;
 		weekCounter = this.weekNumber(startDate);
 		var nextDate = startDate;
-		var weeks = 53;
+		this.weeks = Math.ceil(week);
 		var _g = 0;
-		var _g1 = weeks;
+		var _g1 = this.weeks;
 		while(_g < _g1) {
 			var i = _g++;
 			var fiveDays = new Date(nextDate.getTime() + 432000000.);
-			string1 += "\"" + this.monthArr[nextDate.getMonth()] + " " + nextDate.getFullYear() + "\",,,,,";
+			string1 += "\"" + utils_DateUtil.monthNames[nextDate.getMonth()] + " " + nextDate.getFullYear() + "\",,,,,";
 			string3 += "\"Week " + weekCounter + "\",,,,,";
 			string4 += "" + nextDate.getDate() + "," + new Date(nextDate.getTime() + 86400000.).getDate() + "," + new Date(nextDate.getTime() + 172800000.).getDate() + "," + new Date(nextDate.getTime() + 259200000.).getDate() + "," + new Date(nextDate.getTime() + 345600000.).getDate() + ",";
 			string5 += ",,,,,";
@@ -582,22 +585,52 @@ export_Csv.prototype = {
 		content += ",," + string5 + "\n";
 		return content;
 	}
+	,add: function(phase,title,offsetDay,duration) {
+		haxe_Log.trace("add",{ fileName : "src/export/Csv.hx", lineNumber : 121, className : "export.Csv", methodName : "add"});
+		haxe_Log.trace(phase,{ fileName : "src/export/Csv.hx", lineNumber : 122, className : "export.Csv", methodName : "add", customParams : [title,offsetDay,duration]});
+		var str = "";
+		var _g = 0;
+		var _g1 = offsetDay;
+		while(_g < _g1) {
+			var i = _g++;
+			str += ",";
+		}
+		var _g = 0;
+		var _g1 = duration;
+		while(_g < _g1) {
+			var i = _g++;
+			str += "x,";
+		}
+		var _g = 0;
+		var _g1 = this.days - offsetDay - duration;
+		while(_g < _g1) {
+			var i = _g++;
+			str += ",";
+		}
+		var content = "";
+		if(phase == "" && title == "") {
+			content = "" + phase + "," + title + "," + str + "\n";
+		} else {
+			content = "\"" + phase + "\",\"" + title + "\"," + str + "\n";
+		}
+		return content;
+	}
 	,weekNumber: function(today) {
 		var firstDayOfYear = new Date(today.getFullYear(),0,1,0,0,0);
 		today = new Date(today.getFullYear(),today.getMonth(),today.getDate(),0,0,0);
 		var jan4 = new Date(today.getFullYear(),0,4,0,0,0);
 		var firstMondayOfYear = new Date(today.getFullYear(),0,4 - (jan4.getDay() - 1),0,0,0);
 		var dayNr2 = (today.getTime() - firstMondayOfYear.getTime()) / 86400000;
-		console.log("src/export/Csv.hx:145:","dayNr2 : " + dayNr2 + " ");
+		haxe_Log.trace("dayNr2 : " + dayNr2 + " ",{ fileName : "src/export/Csv.hx", lineNumber : 162, className : "export.Csv", methodName : "weekNumber"});
 		var weekNr = dayNr2 / 7;
-		console.log("src/export/Csv.hx:149:","weekNr: " + weekNr);
+		haxe_Log.trace("weekNr: " + weekNr,{ fileName : "src/export/Csv.hx", lineNumber : 166, className : "export.Csv", methodName : "weekNumber"});
 		if(dayNr2 < 0) {
 			weekNr = 52;
 		} else {
 			weekNr = Math.floor(weekNr) + 1;
 		}
-		console.log("src/export/Csv.hx:156:","after weekNr: " + weekNr);
-		console.log("src/export/Csv.hx:157:","---------------");
+		haxe_Log.trace("after weekNr: " + weekNr,{ fileName : "src/export/Csv.hx", lineNumber : 173, className : "export.Csv", methodName : "weekNumber"});
+		haxe_Log.trace("---------------",{ fileName : "src/export/Csv.hx", lineNumber : 174, className : "export.Csv", methodName : "weekNumber"});
 		return Math.floor(weekNr);
 	}
 	,__class__: export_Csv
@@ -648,6 +681,31 @@ haxe_Exception.prototype = $extend(Error.prototype,{
 	}
 	,__class__: haxe_Exception
 });
+var haxe_Log = function() { };
+haxe_Log.__name__ = true;
+haxe_Log.formatOutput = function(v,infos) {
+	var str = Std.string(v);
+	if(infos == null) {
+		return str;
+	}
+	var pstr = infos.fileName + ":" + infos.lineNumber;
+	if(infos.customParams != null) {
+		var _g = 0;
+		var _g1 = infos.customParams;
+		while(_g < _g1.length) {
+			var v = _g1[_g];
+			++_g;
+			str += ", " + Std.string(v);
+		}
+	}
+	return pstr + ": " + str;
+};
+haxe_Log.trace = function(v,infos) {
+	var str = haxe_Log.formatOutput(v,infos);
+	if(typeof(console) != "undefined" && console.log != null) {
+		console.log(str);
+	}
+};
 var haxe_ValueException = function(value,previous,native) {
 	haxe_Exception.call(this,String(value),previous,native);
 	this.value = value;
@@ -1018,7 +1076,7 @@ model_vo_ProjectVO.prototype = {
 };
 var storage_LocalStorage = function() {
 	this.localStorage = js_Browser.getLocalStorage();
-	console.log("src/storage/LocalStorage.hx:10:","LocalStorage");
+	haxe_Log.trace("LocalStorage",{ fileName : "src/storage/LocalStorage.hx", lineNumber : 10, className : "storage.LocalStorage", methodName : "new"});
 };
 storage_LocalStorage.__name__ = true;
 storage_LocalStorage.prototype = {
@@ -1087,6 +1145,8 @@ DateTools.DAY_NAMES = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Frida
 DateTools.MONTH_SHORT_NAMES = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 DateTools.MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 model_constants_App.NAME = "[Kluez sortable]";
+utils_DateUtil.monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+utils_DateUtil.dayNames = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 utils_DateUtil.october = 9;
 utils_DateUtil.december = 11;
 Main.main();

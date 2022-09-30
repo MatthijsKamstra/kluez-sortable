@@ -123,6 +123,7 @@ class Main {
 		projectVO.startDate = Date.fromString('${projectVO.startDate}'.replace('T', ' ').replace('.000Z', ''));
 		projectVO.endDate = Date.fromString('${projectVO.endDate}'.replace('T', ' ').replace('.000Z', ''));
 
+		cast(document.getElementById('js-date-start'), SpanElement).innerHTML = readableDate(projectVO.startDate);
 		inputStartDate.value = DateTools.format(projectVO.startDate, "%F");
 		inputStartDate.onchange = (e) -> {
 			trace('inputStartDate');
@@ -133,6 +134,7 @@ class Main {
 		}
 		// inputStartDate.min = '';
 
+		cast(document.getElementById('js-date-end'), SpanElement).innerHTML = readableDate(projectVO.endDate);
 		inputEndDate = cast document.getElementById('formControleInputEndDate');
 		inputEndDate.value = DateTools.format(projectVO.endDate, "%F");
 		inputEndDate.onchange = (e) -> {
@@ -213,6 +215,12 @@ class Main {
 			// Read the file
 			reader.readAsText(file);
 		});
+	}
+
+	function readableDate(current:Date):String {
+		var str = '';
+		str += '${DateUtil.dayNames[current.getDay()]} ${current.getDate()} ${DateUtil.monthNames[current.getMonth()]} ${current.getFullYear()}';
+		return str;
 	}
 
 	// function getMetadataForFileList(fileList) {
@@ -343,7 +351,8 @@ title="${issue.title}, ${issue.startDate}, ${issue.duration}"
 				onEnd: function(evt:SortableEvent) {
 					// console.log(evt);
 					// console.log(evt.to);
-					onEndHandler(evt);
+					// onEndHandler(evt);
+					generateOutput();
 				}
 			});
 		};
@@ -352,15 +361,20 @@ title="${issue.title}, ${issue.startDate}, ${issue.duration}"
 	}
 
 	function onUpdate() {
-		onEndHandler(null);
+		console.info('👉 onUpdate');
+		generateOutput();
 		localStorage.setItem(KLUEZ_LOCAL_STORAGE_ID, Json.stringify(projectVO));
-		updateM();
+		// updateMarkdown();
 	}
 
 	function onEndHandler(?evt:SortableEvent) {
 		// console.warn('---------------------------------');
 		// trace("onEndHandler " + evt);
 		// trace(evt);
+	}
+
+	function generateOutput() {
+		// trace("generateOutput ");
 
 		var projectStartDate:Date = projectVO.startDate;
 		var currentDate:Date = projectStartDate;
@@ -371,11 +385,14 @@ title="${issue.title}, ${issue.startDate}, ${issue.duration}"
 
 		var _mermaid = '';
 
-		_mermaid += 'section ${StringUtil.cap('start and finish project')}\n';
-		_mermaid += '\t${StringUtil.cap('start date')} : ${DateTools.format(projectVO.startDate, "%F")}, 1d\n';
-		_mermaid += '\t${StringUtil.cap('end date')} : ${DateTools.format(projectVO.endDate, "%F")}, 1d\n';
+		_mermaid += 'section ${StringUtil.cap('Start and Finish project')}\n';
+		_mermaid += '\t${StringUtil.cap('Start date (${readableDate(projectVO.startDate)})')} : ${DateTools.format(projectVO.startDate, "%F")}, 1d\n';
+		_mermaid += '\t${StringUtil.cap('End date (${readableDate(projectVO.endDate)})')} : ${DateTools.format(projectVO.endDate, "%F")}, 1d\n';
 
-		var _csv = new export.Csv().init(projectVO.startDate, projectVO.endDate);
+		var c = new Csv();
+		var _csv = c.init(projectVO.startDate, projectVO.endDate);
+		_csv += c.add('', '', 0, 0);
+		_csv += c.add('phase', 'title', 0, 0);
 
 		var _projectVO:ProjectVO = new ProjectVO(projectVO.title, projectVO.startDate, projectVO.endDate);
 		_projectVO._id = projectVO._id;
@@ -415,22 +432,26 @@ title="${issue.title}, ${issue.startDate}, ${issue.duration}"
 					// trace(child);
 					// issues
 					for (k in 0...child.children.length) {
-						var c = child.children[k];
+						var ch = child.children[k];
 						// trace(c.innerText);
 						// trace(c.dataset.klId);
 						// trace(c.dataset.klType);
 						// trace(c.dataset.klDuration);
 						// trace(c.dataset.klTitle);
-						var _title = c.dataset.klTitle;
-						var _duration = c.dataset.klDuration;
+						var _title = ch.dataset.klTitle;
+						var _duration = ch.dataset.klDuration;
 						var _durationTimestampDays = DateUtil.convert(_duration);
 						var _durationDayInt:Int = DateUtil.convert2DayInt(_duration);
 
-						c.dataset.klStartDate = DateTools.format(currentDate, "%F");
-						c.title = '${_title}, ${DateTools.format(currentDate, "%F")}, ${_duration}';
+						ch.dataset.klStartDate = DateTools.format(currentDate, "%F");
+						ch.title = '${_title}, ${DateTools.format(currentDate, "%F")}, ${_duration}';
+
+						// TODO: place the correct date an x, times x
+						_csv += c.add(_mileStoneVO.title, _title + ' (${_duration} - ${DateTools.format(currentDate, "%F")})', offsetinDaysCounter,
+							_durationDayInt);
 
 						var _issueVO:IssueVO = new IssueVO(_title, _duration);
-						_issueVO._id = c.dataset.klId;
+						_issueVO._id = ch.dataset.klId;
 						_issueVO.startDate = currentDate;
 						_mileStoneVO.issues.push(_issueVO);
 
@@ -442,9 +463,9 @@ title="${issue.title}, ${issue.startDate}, ${issue.duration}"
 						}
 
 						// change order id
-						var badge = c.querySelector('.badge');
+						var badge = ch.querySelector('.badge');
 						badge.innerHTML = '${issueCounter + 1}';
-						var klBox = c.querySelector('.kl-box');
+						var klBox = ch.querySelector('.kl-box');
 						var offset = 50;
 						klBox.setAttribute('style', 'left:${offsetinDaysCounter * offset}px;width:${_durationDayInt * offset}px;');
 
@@ -459,10 +480,10 @@ title="${issue.title}, ${issue.startDate}, ${issue.duration}"
 
 			projectVO = _projectVO;
 
-			// console.info(_projectVO);
-			// console.info(Json.stringify(_projectVO));
+			// console.info(projectVO);
+			// console.info(Json.stringify(projectVO));
 
-			kluezDataJson = Json.stringify(_projectVO, null, '  ');
+			kluezDataJson = Json.stringify(projectVO, null, '  ');
 			kluezDataCsv = _csv;
 			kluezDataMermaid = new export.Mermaid().init(projectVO.title, _mermaid);
 			kluezDataMermaidHTML = new export.Mermaid().html(projectVO.title, _mermaid);
@@ -478,8 +499,8 @@ title="${issue.title}, ${issue.startDate}, ${issue.duration}"
 		}
 	}
 
-	function updateM() {
-		trace('updateM');
+	function updateMarkdown() {
+		trace('updateMarkdown');
 		// var div4 = document.getElementById('js-inject-mermaid');
 		// div4.innerHTML = ''; // reset
 
