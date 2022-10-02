@@ -148,7 +148,7 @@ var Main = function() {
 	this.kluezDataJson = "";
 	var _gthis = this;
 	window.document.addEventListener("DOMContentLoaded",function(event) {
-		$global.console.log("" + model_constants_App.NAME + " Dom ready :: build: " + "2022-10-02 15:46:51" + " ");
+		$global.console.log("" + model_constants_App.NAME + " Dom ready :: build: " + "2022-10-02 16:58:10" + " ");
 		var json = _gthis.localStorage.getItem(_gthis.KLUEZ_LOCAL_STORAGE_ID);
 		if(json == null) {
 			$global.console.info("Create dummy test data");
