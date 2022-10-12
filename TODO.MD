@@ -6,3 +6,4 @@
 - [x] create json structure
 - [x] create mermaid structure
 - [ ] create csv structure
+- [ ] test
